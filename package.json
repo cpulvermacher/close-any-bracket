@@ -18,6 +18,13 @@
         "title": "Close last open (, [, or {",
         "category": "AnyBrace"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "anybrace.close",
+        "key": "]",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {
