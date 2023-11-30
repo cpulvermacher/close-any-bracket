@@ -1,7 +1,7 @@
 {
   "name": "anybrace",
   "displayName": "AnyBrace",
-  "description": "Close the last open brace, bracket or parenthesis",
+  "description": "Close the last open brace, bracket, or parenthesis",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.84.0"
@@ -16,6 +16,10 @@
       {
         "command": "anybrace.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "anybrace.close",
+        "title": "Close last open (, [, or {"
       }
     ]
   },
