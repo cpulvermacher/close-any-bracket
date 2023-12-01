@@ -3,6 +3,10 @@
   "displayName": "AnyBrace",
   "description": "Close the last open brace, bracket, or parenthesis",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cpulvermacher/anybrace.git"
+  },
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -30,6 +34,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
+    "package": "npx vsce package",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
