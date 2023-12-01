@@ -22,7 +22,8 @@
     "keybindings": [
       {
         "command": "anybrace.close",
-        "key": "]",
+        "key": "alt+]",
+        "mac": "option+]",
         "when": "editorTextFocus"
       }
     ]
