@@ -6,14 +6,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let close = vscode.commands.registerCommand('anybrace.close', () => {
 		const editor = vscode.window.activeTextEditor;
-		if (!editor)
+		if (!editor) {
 			return;
+		}
 
 		const cursorPosition = editor.selection.active;
 		const insertString = findNearestUnclosedParenthesis(editor.document, cursorPosition);
 
-		if (!insertString)
+		if (!insertString) {
 			return;
+		}
 
 		editor.edit(editBuilder => {
 			editBuilder.insert(editor.selection.active, insertString);
@@ -34,7 +36,7 @@ function findNearestUnclosedParenthesis(document: vscode.TextDocument, position:
 	//work backward from cursor position
 	for (let line = position.line; line >= 0; line--) {
 		let lineText = document.lineAt(line).text;
-		if (line == position.line) {
+		if (line === position.line) {
 			lineText = lineText.substr(0, position.character);
 		}
 
