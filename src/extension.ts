@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const cursorPosition = editor.selection.active;
-		const insertString = findNearestUnclosedParenthesis(editor.document, cursorPosition);
+		const insertString = findLastOpenBracket(editor.document, cursorPosition);
 
 		if (!insertString) {
 			return;
@@ -25,7 +25,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(close);
 }
 
-function findNearestUnclosedParenthesis(document: vscode.TextDocument, position: vscode.Position): string | null {
+export type ClosingBracket = ')' | ']' | '}';
+
+/**
+ * Finds the nearest open bracket to the left of `position` and returns the
+ * matching closing bracket, or null if nothing to close.
+ */
+export function findLastOpenBracket(document: vscode.TextDocument, position: vscode.Position): ClosingBracket | null {
 
 	const closeCounts = {
 		parentheses: 0,
