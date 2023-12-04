@@ -1,11 +1,12 @@
 {
-  "name": "anybrace",
-  "displayName": "AnyBrace",
-  "description": "Close the last open brace, bracket, or parenthesis",
+  "name": "close-any-bracket",
+  "displayName": "Close Any Bracket",
+  "description": "Close the last open parenthesis, brace, or bracket",
+  "publisher": "cpulvermacher",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cpulvermacher/anybrace.git"
+    "url": "https://github.com/cpulvermacher/close-any-bracket.git"
   },
   "engines": {
     "vscode": "^1.84.0"
@@ -13,19 +14,26 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "braces",
+    "brackets",
+    "close",
+    "parentheses"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "anybrace.close",
+        "command": "close-any-bracket.close",
         "title": "Close last open (, [, or {",
-        "category": "AnyBrace"
+        "category": "Close Any Bracket"
       }
     ],
     "keybindings": [
       {
-        "command": "anybrace.close",
+        "command": "close-any-bracket.close",
         "key": "alt+]",
         "mac": "option+]",
         "when": "editorTextFocus"

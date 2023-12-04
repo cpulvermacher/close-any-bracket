@@ -1,10 +1,10 @@
-# AnyBrace
+# Close Any Bracket
 
-Close the last open brace, bracket, or parenthesis.
+A minimalist extension adding one command:
 
-## Features
-
-Press `Alt+]` (`Option+]`) to close the last open `(`, `[`, or `{` of any type.
+- `Close last open (, [, or {` which closes the last open parenthesis, brace, or bracket. (default shortcut `Alt+]`, mac: `Option+]`)
 
 
+## Limitations
 
+Does not understand any syntax except for brackets, and will happily close brackets that are e.g. within strings.

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	let close = vscode.commands.registerCommand('anybrace.close', () => {
+	let close = vscode.commands.registerCommand('close-any-bracket.close', () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			return;
