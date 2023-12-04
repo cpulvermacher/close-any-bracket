@@ -20,6 +20,7 @@
     "close",
     "parentheses"
   ],
+  "icon": "icon.png",
   "license": "SEE LICENSE IN LICENSE",
   "activationEvents": [],
   "main": "./out/extension.js",
