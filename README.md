@@ -2,7 +2,7 @@
 
 A minimalist extension adding one command:
 
-- `Close last open (, [, or {` which closes the last open parenthesis, brace, or bracket. (default shortcut `Alt+]`, mac: `Option+]`)
+- `Close last open (, [, or {` which closes the last open parenthesis, brace, or bracket. (default shortcut `Alt+]`, Mac: `Control+]`)
 
 
 ## Limitations

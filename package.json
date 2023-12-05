@@ -36,7 +36,7 @@
       {
         "command": "close-any-bracket.close",
         "key": "alt+]",
-        "mac": "option+]",
+        "mac": "ctrl+]",
         "when": "editorTextFocus"
       }
     ]
