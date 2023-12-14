@@ -78,6 +78,7 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
 			break;
 		case 'typescriptreact':
 			grammarId = 'tsx';
+			break;
 		case 'objective-c':
 			grammarId = 'objectivec';
 			break;
