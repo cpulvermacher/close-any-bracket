@@ -137,7 +137,7 @@ export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: numb
 
     // this assumes that all relevant tokens are on the top-level of `tokens`.
     // (should be the case if using getContextAtCursor())
-    let expectedBrackets: ClosingBracket[] = [];
+    const expectedBrackets: ClosingBracket[] = [];
     let currentOffset = 0;
     for (const token of tokens) {
         const bracketString = getBracketString(token);
@@ -170,7 +170,7 @@ export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: numb
 
 /** returns either a opening/closing bracket character if the token represents one, or null. */
 export function getBracketString(token: string | Prism.Token): string | null {
-    var tokenStr;
+    let tokenStr;
     if (typeof token === 'string') {
         tokenStr = token;
     } else if (token.type === 'punctuation') {

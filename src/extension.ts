@@ -7,7 +7,7 @@ export function deactivate() { }
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	let close = vscode.commands.registerCommand('close-any-bracket.close', () => {
+	const close = vscode.commands.registerCommand('close-any-bracket.close', () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			return;
@@ -15,6 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const cursorPosition = editor.selection.active;
 		const cursorOffset = editor.document.offsetAt(cursorPosition);
+
 		const insertString = getBracketToInsert(editor.document.getText(), cursorOffset, editor.document.languageId);
 		if (!insertString) {
 			return;
