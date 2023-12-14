@@ -19,36 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		const grammar = getGrammar(editor.document.languageId);
-		if (!grammar) {
-			console.log(`Couldn't find grammar for language ${editor.document.languageId}`);
-			return;
-		}
-
-		const allTokens = Prism.tokenize(editor.document.getText(), grammar);
-		console.log("Tokenized input file:", allTokens);
-
 		const cursorPosition = editor.selection.active;
 		const cursorOffset = editor.document.offsetAt(cursorPosition);
-		const tokensAtCursor = getTokensAtOffset(allTokens, cursorOffset);
-		console.log("Token at cursor", tokensAtCursor);
-		//TODO at end of file this is null.
-
-		const context = getContextAtCursor(allTokens, tokensAtCursor);
-
-		// If we're inside a (non-template) string, fall back to dumb algorithm
-		//TODO
-
-		// but how do we define "in"?
-		//TODO
-
-		const missing = getMissingBrackets(context, cursorOffset);
-		console.log(`Found missing brackets: ${missing}`);
-		if (!missing) {
+		const insertString = getBracketToInsert(editor.document.getText(), cursorOffset, editor.document.languageId);
+		if (!insertString) {
 			return;
 		}
 
-		const insertString = missing[missing.length - 1];
 		editor.edit(editBuilder => {
 			editBuilder.insert(editor.selection.active, insertString);
 		});
@@ -59,11 +36,40 @@ export function activate(context: vscode.ExtensionContext) {
 
 export type ClosingBracket = ')' | ']' | '}';
 
+/** get bracket that should be closed at cursor position */
+export function getBracketToInsert(text: string, cursorOffset: number, languageId: string): ClosingBracket | null {
+	const grammar = getGrammar(languageId);
+	if (!grammar) {
+		console.log(`Couldn't find grammar for language ${languageId}`);
+		return null;
+	}
+
+	const allTokens = Prism.tokenize(text, grammar);
+	console.log("Tokenized input file:", allTokens);
+
+	const tokenBeforeCursor = getTokenBeforeOffset(allTokens, cursorOffset);
+
+	//TODO there's a difference between 'before cursor' and 'surrounds cursor' (which is what context refers to)
+	// to get proper context, I'd want to 
+	const context = getContextAtCursor(allTokens, tokenBeforeCursor);
+
+	//TODO
+	// If we're inside a (non-template) string, fall back to dumb algorithm
+
+	const missing = getMissingBrackets(context, cursorOffset);
+	if (!missing) {
+		return null;
+	}
+
+	return missing[missing.length - 1];
+}
+
+
 /**
  * Maps VSCode language identifiers (https://code.visualstudio.com/docs/languages/identifiers)
  * to Grammar (https://prismjs.com/#supported-languages) or null if not found
  */
-function getGrammar(languageId: string): Prism.Grammar | null {
+export function getGrammar(languageId: string): Prism.Grammar | null {
 
 	let grammarId: string;
 	switch (languageId) {
@@ -75,6 +81,9 @@ function getGrammar(languageId: string): Prism.Grammar | null {
 		case 'objective-c':
 			grammarId = 'objectivec';
 			break;
+		case 'shellscript':
+			grammarId = 'shell';
+			break;
 		default:
 			grammarId = languageId;
 			break;
@@ -83,30 +92,47 @@ function getGrammar(languageId: string): Prism.Grammar | null {
 	return Prism.languages[grammarId] || null;
 }
 
-/** Returns the list of tokens at given offset.
- * This will usually be a single Token, but for a nested context
+/** Returns the list of tokens immediately before given offset.
+ * 
+ * A cursor offset of x represents a position _before_ x! E.g. for
+ * offset = 0, there are no tokens before 0, so this returns `null`.
+
+ * Usually this returns a single Token, but for a nested context
  * (e.g. inside template strings) there may be multiple elements.
  */
-function getTokensAtOffset(tokens: Prism.TokenStream, offset: number): (string | Prism.Token)[] | null {
+export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: number): (string | Prism.Token)[] | null {
+	if (cursorOffset === 0) {
+		return null;
+	}
+
 	if (typeof tokens === 'string' || 'content' in tokens) {
 		// terminal token (string | Token)
-		return (offset < tokens.length) ? [tokens] : null;
+		return (cursorOffset < tokens.length) ? [tokens] : null;
 	}
 
 	let currentOffset = 0;
 	for (const token of tokens) {
-		if (currentOffset + token.length > offset) {
+		//note: case for token starts after cursor cannot happen (cursorOffset > 0)
+
+		if (currentOffset + token.length < cursorOffset) {
+			// token ends before cursorOffset - 1, skip
+			currentOffset += token.length;
+		} else {
+			// token includes cursorOffset - 1
 			if (typeof token === 'string' || typeof token.content === 'string') {
 				return [token];
 			} else {
-				const childTokens = getTokensAtOffset(token.content, offset - currentOffset);
+				const childTokens = getTokenBeforeOffset(token.content, cursorOffset - currentOffset);
+				if (!childTokens) {
+					return [token];
+				}
 				childTokens?.unshift(token);
 				return childTokens;
-
 			}
 		}
-		currentOffset += token.length;
 	}
+
+	console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
 	return null;
 }
 
@@ -114,7 +140,7 @@ function getTokensAtOffset(tokens: Prism.TokenStream, offset: number): (string |
  * use tokens at cursor offset to determine what our scope is.;
  * this might be the entire file if we get only one(top - level) token,
  * or e.g.a template string.*/
-function getContextAtCursor(allTokens: (string | Prism.Token)[], tokensAtCursor: (string | Prism.Token)[] | null): Prism.TokenStream {
+export function getContextAtCursor(allTokens: (string | Prism.Token)[], tokensAtCursor: (string | Prism.Token)[] | null): Prism.TokenStream {
 	if (tokensAtCursor === null || tokensAtCursor.length <= 1) {
 		return allTokens;
 	}
@@ -125,14 +151,19 @@ function getContextAtCursor(allTokens: (string | Prism.Token)[], tokensAtCursor:
 
 /** Returns an array like ["}", ")"] with the brackets that are
  * still unclosed at cursor position, or [] if balanced. */
-function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): string[] {
+export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): ClosingBracket[] {
+
 	if (typeof tokens === 'string' || 'type' in tokens) {
-		throw new Error(`Unexpected tokens type: ${typeof tokens}`);
+		console.error(`Unexpected tokens type: ${typeof tokens}`);
+		if (typeof tokens !== 'string') {
+			return getMissingBrackets(tokens.content, cursorOffset);
+		}
+		return [];
 	}
 
 	// this assumes that all relevant tokens are on the top-level of `tokens`.
 	// (should be the case if using getContextAtCursor())
-	let expectedBrackets: string[] = [];
+	let expectedBrackets: ClosingBracket[] = [];
 	let currentOffset = 0;
 	for (const token of tokens) {
 		const bracketString = getBracketString(token);
@@ -147,8 +178,8 @@ function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): st
 				if (expectedBrackets && expectedBrackets[expectedBrackets.length - 1] === bracketString) {
 					expectedBrackets.pop();
 				} else {
-					//TODO this shows an error to the user, avoid
-					throw new Error(`Encountered unexpected bracket "${bracketString}", but expected last item in ${expectedBrackets}`);
+					console.error(`Encountered unexpected bracket "${bracketString}", but expected last item in ${expectedBrackets}`);
+					return [];
 				}
 			}
 
@@ -156,7 +187,7 @@ function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): st
 		currentOffset += token.length;
 
 		//no need to check beyond cursor
-		if (currentOffset > cursorOffset) {
+		if (currentOffset >= cursorOffset) {
 			break;
 		}
 	}
@@ -164,7 +195,7 @@ function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): st
 }
 
 /** returns either a opening/closing bracket character if the token represents one, or null. */
-function getBracketString(token: string | Prism.Token): string | null {
+export function getBracketString(token: string | Prism.Token): string | null {
 	var tokenStr;
 	if (typeof token === 'string') {
 		tokenStr = token;
