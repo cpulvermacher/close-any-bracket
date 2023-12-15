@@ -8,6 +8,7 @@ node_modules
 .yarnrc
 **/tsconfig.json
 **/.eslintrc.json
+vitest.config.js
 **/*.map
 **/*.ts
 icon.svg

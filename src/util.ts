@@ -37,7 +37,7 @@ export function getBracketToInsert(text: string, cursorOffset: number, languageI
     // If we're inside a (non-template) string, fall back to dumb algorithm
 
     const missing = getMissingBrackets(context, cursorOffset);
-    if (!missing) {
+    if (!missing || missing.length === 0) {
         return null;
     }
 
@@ -106,7 +106,7 @@ export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: nu
                 if (!childTokens) {
                     return [token];
                 }
-                childTokens?.unshift(token);
+                childTokens.unshift(token);
                 return childTokens;
             }
         }
