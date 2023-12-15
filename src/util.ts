@@ -1,8 +1,7 @@
 import Prism from 'prismjs';
+Prism.manual = true;
 import loadLanguages from 'prismjs/components/index';
 
-//load all languages
-loadLanguages();
 
 const BRACKET_CHARACTERS = new Set(["(", ")", "{", "}", "[", "]"]);
 
@@ -68,6 +67,11 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
         default:
             grammarId = languageId;
             break;
+    }
+
+    if (!(grammarId in Prism.languages)) {
+        console.log(`trying to load grammar ${grammarId}...`);
+        loadLanguages(grammarId);
     }
 
     return Prism.languages[grammarId] || null;
