@@ -8,6 +8,13 @@ const BRACKET_CHARACTERS = new Set(["(", ")", "{", "}", "[", "]"]);
 
 export type ClosingBracket = ')' | ']' | '}';
 
+
+type Token = string | Prism.Token;
+
+function isSingleToken(token: Prism.TokenStream): token is Token {
+    return typeof token === 'string' || 'content' in token;
+}
+
 /** get bracket that should be closed at cursor position */
 export function getBracketToInsert(text: string, cursorOffset: number, languageId: string): ClosingBracket | null {
     const grammar = getGrammar(languageId);
@@ -74,14 +81,13 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
  * Usually this returns a single Token, but for a nested context
  * (e.g. inside template strings) there may be multiple elements.
  */
-export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: number): (string | Prism.Token)[] | null {
+export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: number): Token[] | null {
     if (cursorOffset === 0) {
         return null;
     }
 
-    if (typeof tokens === 'string' || 'content' in tokens) {
-        // terminal token (string | Token)
-        return (cursorOffset < tokens.length) ? [tokens] : null;
+    if (isSingleToken(tokens)) {
+        return (cursorOffset <= tokens.length) ? [tokens] : null;
     }
 
     let currentOffset = 0;
@@ -108,13 +114,14 @@ export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: nu
 
     console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
     return null;
+
 }
 
 /**
  * use tokens at cursor offset to determine what our scope is.;
  * this might be the entire file if we get only one(top - level) token,
  * or e.g.a template string.*/
-export function getContextAtCursor(allTokens: (string | Prism.Token)[], tokensAtCursor: (string | Prism.Token)[] | null): Prism.TokenStream {
+export function getContextAtCursor(allTokens: Token[], tokensAtCursor: Token[] | null): Prism.TokenStream {
     if (tokensAtCursor === null || tokensAtCursor.length <= 1) {
         return allTokens;
     }
@@ -127,7 +134,7 @@ export function getContextAtCursor(allTokens: (string | Prism.Token)[], tokensAt
  * still unclosed at cursor position, or [] if balanced. */
 export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): ClosingBracket[] {
 
-    if (typeof tokens === 'string' || 'type' in tokens) {
+    if (isSingleToken(tokens)) {
         console.error(`Unexpected tokens type: ${typeof tokens}`);
         if (typeof tokens !== 'string') {
             return getMissingBrackets(tokens.content, cursorOffset);
@@ -169,7 +176,7 @@ export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: numb
 }
 
 /** returns either a opening/closing bracket character if the token represents one, or null. */
-export function getBracketString(token: string | Prism.Token): string | null {
+export function getBracketString(token: Token): string | null {
     let tokenStr;
     if (typeof token === 'string') {
         tokenStr = token;
@@ -184,5 +191,4 @@ export function getBracketString(token: string | Prism.Token): string | null {
     } else {
         return null;
     }
-
 }
