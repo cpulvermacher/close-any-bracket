@@ -48,7 +48,7 @@
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npx vsce package",
-    "pretest": "npm run build && npm run lint",
+    "pretest": "npm run build && esbuild ./src/test/runTest.ts --bundle --outfile=out/test/runTest.js --external:vscode --format=cjs --platform=node",
     "lint": "eslint src --ext ts && tsc --noEmit",
     "test": "vitest --run && node ./out/test/runTest.js"
   },
