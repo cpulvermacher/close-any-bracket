@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { getBracketToInsert } from './util';
 
-export function deactivate() { }
+export function deactivate() { /* nothing to do here */ }
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed

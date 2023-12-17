@@ -7,9 +7,9 @@ const BRACKET_CHARACTERS = new Set(["(", ")", "{", "}", "[", "]"]);
 
 export type ClosingBracket = ')' | ']' | '}';
 
-type Token = string | Prism.Token;
+export type Token = string | Prism.Token;
 
-function isSingleToken(token: Prism.TokenStream): token is Token {
+export function isSingleToken(token: Prism.TokenStream): token is Token {
     return typeof token === 'string' || 'content' in token;
 }
 
@@ -25,7 +25,7 @@ export function getBracketToInsert(text: string, cursorOffset: number, languageI
     console.log("Tokenized input file:", allTokens);
 
     const tokenBeforeCursor = getTokenBeforeOffset(allTokens, cursorOffset);
-    console.log(`Token before cursor`, tokenBeforeCursor);
+    console.log("Token before cursor:", tokenBeforeCursor);
 
     if (tokenBeforeCursor === null) {
         return null;
@@ -89,7 +89,7 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
  * (e.g. inside template strings) there may be multiple elements.
  */
 export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: number): Token[] | null {
-    if (cursorOffset === 0) {
+    if (cursorOffset <= 0) {
         return null;
     }
 
@@ -103,19 +103,21 @@ export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: nu
 
         if (currentOffset + token.length < cursorOffset) {
             // token ends before cursorOffset - 1, skip
+            console.log(`token ${token} ends before cursor, skipping`);
             currentOffset += token.length;
-        } else {
+        } else if (typeof token === 'string' || typeof token.content === 'string') {
+            console.log(`got string token ${token}, returning`);
             // token includes cursorOffset - 1
-            if (typeof token === 'string' || typeof token.content === 'string') {
+            return [token];
+        } else {
+            // cursor is inside or just after token
+            console.log(`found token ${token} before cursor, descending`);
+            const childTokens = getTokenBeforeOffset(token.content, cursorOffset - currentOffset);
+            if (!childTokens) {
                 return [token];
-            } else {
-                const childTokens = getTokenBeforeOffset(token.content, cursorOffset - currentOffset);
-                if (!childTokens) {
-                    return [token];
-                }
-                childTokens.unshift(token);
-                return childTokens;
             }
+            childTokens.unshift(token);
+            return childTokens;
         }
     }
 
