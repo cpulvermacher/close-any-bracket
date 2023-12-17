@@ -184,17 +184,16 @@ export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: numb
 
 /** returns either a opening/closing bracket character if the token represents one, or null. */
 export function getBracketString(token: Token): string | null {
-    let tokenStr;
-    if (typeof token === 'string') {
-        tokenStr = token;
-    } else if (token.type === 'punctuation') {
-        tokenStr = token.content as string;
-    } else {
+    if (typeof token === 'string' || token.type !== 'punctuation') {
+        return null;
+    }
+    if (typeof token.content !== 'string') {
+        console.log("getBracketString: found punctuation token with unexpected content", token.content);
         return null;
     }
 
-    if (BRACKET_CHARACTERS.has(tokenStr)) {
-        return tokenStr;
+    if (BRACKET_CHARACTERS.has(token.content)) {
+        return token.content;
     } else {
         return null;
     }
