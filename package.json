@@ -3,7 +3,7 @@
   "displayName": "Close Any Bracket",
   "description": "Close the last open parenthesis, brace, or bracket",
   "publisher": "cpulvermacher",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/cpulvermacher/close-any-bracket.git"
@@ -23,7 +23,7 @@
   "icon": "icon.png",
   "license": "SEE LICENSE IN LICENSE",
   "activationEvents": [],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
@@ -42,16 +42,15 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "rm -rf ./dist && npm run esbuild-base -- && cp node_modules/prismjs/components/prism-*.js dist/",
-    "actual_vscode:prepublish": "rm -rf ./dist && npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "copy-languages": "cp node_modules/prismjs/components/prism-*.js out/",
+    "vscode:prepublish": "rm -rf ./out && npm run esbuild-base -- && npm run copy-languages",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npx vsce package",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "compile": "tsc -p ./",
-    "test": "node ./out/test/runTest.js"
+    "test": "vitest --run && node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
