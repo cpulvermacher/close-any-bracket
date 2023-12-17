@@ -1,12 +1,11 @@
 import Prism from 'prismjs';
-Prism.manual = true;
+Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
 import loadLanguages from 'prismjs/components/index';
 
 
 const BRACKET_CHARACTERS = new Set(["(", ")", "{", "}", "[", "]"]);
 
 export type ClosingBracket = ')' | ']' | '}';
-
 
 type Token = string | Prism.Token;
 
@@ -27,6 +26,10 @@ export function getBracketToInsert(text: string, cursorOffset: number, languageI
 
     const tokenBeforeCursor = getTokenBeforeOffset(allTokens, cursorOffset);
     console.log(`Token before cursor`, tokenBeforeCursor);
+
+    if (tokenBeforeCursor === null) {
+        return null;
+    }
 
     //TODO there's a difference between 'before cursor' and 'surrounds cursor' (which is what context refers to)
     // to get proper context, I'd want to 
@@ -70,7 +73,7 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
     }
 
     if (!(grammarId in Prism.languages)) {
-        console.log(`trying to load grammar ${grammarId}...`);
+        console.log(`Trying to load grammar for ${grammarId}...`);
         loadLanguages(grammarId);
     }
 
