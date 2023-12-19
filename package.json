@@ -3,7 +3,7 @@
   "displayName": "Close Any Bracket",
   "description": "Close the last open parenthesis, brace, or bracket",
   "publisher": "cpulvermacher",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/cpulvermacher/close-any-bracket.git"
