@@ -22,10 +22,10 @@ export function getBracketToInsert(text: string, cursorOffset: number, languageI
     }
 
     const allTokens = Prism.tokenize(text, grammar);
-    console.log("Tokenized input file:", allTokens);
+    console.debug("Tokenized input file:", allTokens);
 
     const tokenBeforeCursor = getTokenBeforeOffset(allTokens, cursorOffset);
-    console.log("Token before cursor:", tokenBeforeCursor);
+    console.debug("Token before cursor:", tokenBeforeCursor);
 
     if (tokenBeforeCursor === null) {
         return null;
@@ -103,15 +103,14 @@ export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: nu
 
         if (currentOffset + token.length < cursorOffset) {
             // token ends before cursorOffset - 1, skip
-            console.log(`token ${token} ends before cursor, skipping`);
             currentOffset += token.length;
         } else if (typeof token === 'string' || typeof token.content === 'string') {
-            console.log(`got string token ${token}, returning`);
+            console.debug(`got string token ${formatToken(token)}, returning`);
             // token includes cursorOffset - 1
             return [token];
         } else {
             // cursor is inside or just after token
-            console.log(`found token ${token} before cursor, descending`);
+            console.debug(`found token ${formatToken(token)} before cursor, descending`);
             const childTokens = getTokenBeforeOffset(token.content, cursorOffset - currentOffset);
             if (!childTokens) {
                 return [token];
@@ -199,4 +198,17 @@ export function getBracketString(token: Token): string | null {
     } else {
         return null;
     }
+}
+
+export function formatToken(token: Token): string {
+    if (typeof token === 'string') {
+        return `"${token}"`;
+    }
+
+    if (isSingleToken(token.content)) {
+        return `"${formatToken(token.content)}"`;
+    }
+
+    return token.type;
+
 }
