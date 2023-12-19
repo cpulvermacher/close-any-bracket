@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import Prism, { languages } from 'prismjs';
 
-import { getBracketToInsert, getGrammar, getTokenBeforeOffset, isSingleToken } from '../../util';
+import { getBracketToInsert, getGrammar, getTokenBeforeOffset, isSingleToken } from '../../brackets';
 
 describe('getBracketToInsert', () => {
     it('closes open brackets', () => {

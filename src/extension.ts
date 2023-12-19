@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getBracketToInsert } from './util';
+import { getBracketToInsert } from './brackets';
 
 export function deactivate() { /* nothing to do here */ }
 
