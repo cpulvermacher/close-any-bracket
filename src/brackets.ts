@@ -24,19 +24,11 @@ export function getBracketToInsert(text: string, cursorOffset: number, languageI
     const allTokens = Prism.tokenize(text, grammar);
     console.debug("Tokenized input file:", allTokens);
 
-    const tokenBeforeCursor = getTokenBeforeOffset(allTokens, cursorOffset);
-    console.debug("Token before cursor:", tokenBeforeCursor);
-
-    if (tokenBeforeCursor === null) {
+    const context = getContextAtCursor(allTokens, cursorOffset);
+    if (context === null) {
         return null;
     }
-
-    //TODO there's a difference between 'before cursor' and 'surrounds cursor' (which is what context refers to)
-    // to get proper context, I'd want to 
-    const context = getContextAtCursor(allTokens, tokenBeforeCursor);
-
-    //TODO
-    // If we're inside a (non-template) string, fall back to dumb algorithm
+    console.debug("Current context", context);
 
     const missing = getMissingBrackets(context, cursorOffset);
     if (!missing || missing.length === 0) {
@@ -80,21 +72,21 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
     return Prism.languages[grammarId] || null;
 }
 
-/** Returns the list of tokens immediately before given offset.
+/** Returns the token or list of tokens that is relevant for the current cursor position.
+ *
+ * Might return a single token if we are a string, the entire file if 
+ * we get only one(top - level) token, or something in between.
  * 
- * A cursor offset of x represents a position _before_ x! E.g. for
+ * Note that a cursor offset of x represents a position _before_ x! E.g. for
  * offset = 0, there are no tokens before 0, so this returns `null`.
-
- * Usually this returns a single Token, but for a nested context
- * (e.g. inside template strings) there may be multiple elements.
  */
-export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: number): Token[] | null {
+export function getContextAtCursor(tokens: Prism.TokenStream, cursorOffset: number): Prism.TokenStream | null {
     if (cursorOffset <= 0) {
         return null;
     }
 
     if (isSingleToken(tokens)) {
-        return (cursorOffset <= tokens.length) ? [tokens] : null;
+        return (cursorOffset <= tokens.length) ? tokens : null;
     }
 
     let currentOffset = 0;
@@ -104,38 +96,27 @@ export function getTokenBeforeOffset(tokens: Prism.TokenStream, cursorOffset: nu
         if (currentOffset + token.length < cursorOffset) {
             // token ends before cursorOffset - 1, skip
             currentOffset += token.length;
+        } else if (typeof token !== 'string' && token.type === 'string') {
+            // if cursor is on the last char of the token and it's a quote, the cursor is not inside the string anymore
+            const tokenStr = typeof token === 'string' ? token : token.content as string;
+            if (token.length > 1 && currentOffset + token.length === cursorOffset && tokenStr[0] === tokenStr[token.length - 1]) {
+                return tokens;
+            } else {
+                return token;
+            }
         } else if (typeof token === 'string' || typeof token.content === 'string') {
-            console.debug(`got string token ${formatToken(token)}, returning`);
+            console.debug(`got raw string token ${formatToken(token)}, returning`);
             // token includes cursorOffset - 1
-            return [token];
+            return tokens;
         } else {
             // cursor is inside or just after token
             console.debug(`found token ${formatToken(token)} before cursor, descending`);
-            const childTokens = getTokenBeforeOffset(token.content, cursorOffset - currentOffset);
-            if (!childTokens) {
-                return [token];
-            }
-            childTokens.unshift(token);
-            return childTokens;
+            return getContextAtCursor(token.content, cursorOffset - currentOffset);
         }
     }
 
     console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
     return null;
-
-}
-
-/**
- * use tokens at cursor offset to determine what our scope is.;
- * this might be the entire file if we get only one(top - level) token,
- * or e.g.a template string.*/
-export function getContextAtCursor(allTokens: Token[], tokensAtCursor: Token[] | null): Prism.TokenStream {
-    if (tokensAtCursor === null || tokensAtCursor.length <= 1) {
-        return allTokens;
-    }
-
-    //for tokensAtCursor.length >= 2, return the next level up
-    return tokensAtCursor[tokensAtCursor.length - 2];
 }
 
 /** Returns an array like ["}", ")"] with the brackets that are
