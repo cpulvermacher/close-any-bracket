@@ -1,8 +1,13 @@
 # Change Log
 
-## [0.1.0]
+
+## [0.1.1]
 
 - Add syntax support for ~297 languages
+
+## [0.1.0]
+
+- (pre-release) Add syntax support for ~297 languages
 
 ## [0.0.2]
 
