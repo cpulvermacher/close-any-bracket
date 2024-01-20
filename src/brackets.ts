@@ -122,6 +122,7 @@ export function getContextAtCursor(tokens: Prism.TokenStream, cursorOffset: numb
 /** Returns an array like ["}", ")"] with the brackets that are
  * still unclosed at cursor position, or [] if balanced. */
 export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): ClosingBracket[] {
+    //TODO add meta-information on where the bracket was opened (indentation level)
 
     if (isSingleToken(tokens)) {
         console.error(`Unexpected tokens type: ${typeof tokens}`);
@@ -192,4 +193,36 @@ export function formatToken(token: Token): string {
 
     return token.type;
 
+}
+
+
+/**
+ * Returns the indentation level at the given line.
+ * 
+ * If the line ion is empty, the previous line is used. 
+ * 
+ * @param lineNo line number
+ * @param getLine function that returns the content of a specific line.
+ */
+export function getIndentationLevelAtLine(lineNo: number, getLine: (line: number) => string): number {
+    let line = getLine(lineNo);
+    while (lineNo > 0 && line.replaceAll('\n', '') === '') {
+        line = getLine(--lineNo);
+    }
+
+    let indentationLevel = 0;
+    for (const c of line) {
+        if (c !== ' ' && c !== '\t') {
+            break;
+        }
+
+        if (c === ' ') {
+            indentationLevel++;
+        } else if (c === '\t') {
+            // Assuming a tab is equivalent to 4 spaces
+            indentationLevel += 4;
+        }
+    }
+
+    return indentationLevel;
 }

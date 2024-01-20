@@ -26,5 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 	});
+	//TODO add command to trigger close-to-indentation
 	context.subscriptions.push(close);
+}
+
+function getLine(document: vscode.TextDocument, line: number) {
+	return document.lineAt(line).text;
 }
