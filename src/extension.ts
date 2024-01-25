@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getBracketToInsert } from './brackets';
+import { getBracketToInsert, getIndentationLevelAtLine } from './brackets';
 
 export function deactivate() { /* nothing to do here */ }
 
@@ -26,8 +26,20 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 	});
-	//TODO add command to trigger close-to-indentation
-	context.subscriptions.push(close);
+
+	const closeToIndent = vscode.commands.registerCommand('close-any-bracket.close-to-indent', () => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return;
+		}
+
+		const cursorPosition = editor.selection.active;
+		const targetIndent = getIndentationLevelAtLine(cursorPosition.line, (line) => getLine(editor.document, line));
+
+		console.log(`target indent: ${targetIndent}`);
+	});
+
+	context.subscriptions.push(close, closeToIndent);
 }
 
 function getLine(document: vscode.TextDocument, line: number) {

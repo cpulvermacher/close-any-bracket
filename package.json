@@ -30,6 +30,11 @@
         "command": "close-any-bracket.close",
         "title": "Close last open (, [, or {",
         "category": "Close Any Bracket"
+      },
+      {
+        "command": "close-any-bracket.close-to-indent",
+        "title": "Close all open brackets to current indent",
+        "category": "Close Any Bracket"
       }
     ],
     "keybindings": [
