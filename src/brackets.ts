@@ -195,7 +195,6 @@ export function formatToken(token: Token): string {
 
 }
 
-
 /**
  * Returns the indentation level at the given line.
  * 
@@ -205,10 +204,15 @@ export function formatToken(token: Token): string {
  * @param getLine function that returns the content of a specific line.
  */
 export function getIndentationLevelAtLine(lineNo: number, getLine: (line: number) => string): number {
-    let line = getLine(lineNo);
-    while (lineNo > 0 && line.replaceAll('\n', '') === '') {
-        line = getLine(--lineNo);
-    }
+    let line: string;
+    do {
+        line = getLine(lineNo);
+        if (line.replaceAll('\n', '') === '') {
+            lineNo--;
+        } else {
+            break;
+        }
+    } while (lineNo >= 0);
 
     let indentationLevel = 0;
     for (const c of line) {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import Prism, { languages } from 'prismjs';
 
-import { getBracketToInsert, getGrammar, getContextAtCursor, isSingleToken } from '../../brackets';
+import { getBracketToInsert, getGrammar, getContextAtCursor, isSingleToken, getIndentationLevelAtLine } from '../../brackets';
 
 describe('getBracketToInsert', () => {
     it('closes open brackets', () => {
@@ -196,6 +196,34 @@ describe('getContextAtCursor', () => {
     it('returns null for empty token stream', () => {
         expect(getContextAtCursor([], 0)).toBe(null);
         expect(getContextAtCursor([], 1)).toBe(null);
+    });
+});
+
+describe('getIndentationLevelAtLine', () => {
+    it('returns 0 for empty line', () => {
+        expect(getIndentationLevelAtLine(0, () => '')).toBe(0);
+    });
+
+    it('returns indent for line with only whitespace', () => {
+        expect(getIndentationLevelAtLine(0, () => '   ')).toBe(3);
+    });
+
+    it('returns 1 for line with one space indent', () => {
+        expect(getIndentationLevelAtLine(0, () => ' abc')).toBe(1);
+    });
+
+    it('returns 4 for line with one tab indent', () => {
+        expect(getIndentationLevelAtLine(0, () => '\tabc')).toBe(4);
+    });
+
+    it('skips empty lines', () => {
+        expect(getIndentationLevelAtLine(1, (line) => {
+            if (line === 0) {
+                return '  abc';
+            } else {
+                return '';
+            }
+        })).toBe(2);
     });
 });
 
