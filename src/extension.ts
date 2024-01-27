@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getBracketToInsert, getIndentationLevelAtLine } from './brackets';
+import { closeToIndentAtLine, getBracketToInsert } from './brackets';
 
 export function deactivate() { /* nothing to do here */ }
 
@@ -17,14 +17,12 @@ export function activate(context: vscode.ExtensionContext) {
 		const cursorOffset = editor.document.offsetAt(cursorPosition);
 
 		const insertString = getBracketToInsert(editor.document.getText(), cursorOffset, editor.document.languageId);
-		if (!insertString) {
-			return;
+
+		if (insertString) {
+			editor.edit(editBuilder => {
+				editBuilder.insert(editor.selection.active, insertString);
+			});
 		}
-
-		editor.edit(editBuilder => {
-			editBuilder.insert(editor.selection.active, insertString);
-		});
-
 	});
 
 	const closeToIndent = vscode.commands.registerCommand('close-any-bracket.close-to-indent', () => {
@@ -34,9 +32,15 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const cursorPosition = editor.selection.active;
-		const targetIndent = getIndentationLevelAtLine(cursorPosition.line, (line) => getLine(editor.document, line));
+		const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-		console.log(`target indent: ${targetIndent}`);
+		const insertString = closeToIndentAtLine(editor.document.getText(), cursorOffset, editor.document.languageId, cursorPosition.line, (line) => getLine(editor.document, line));
+
+		if (insertString) {
+			editor.edit(editBuilder => {
+				editBuilder.insert(editor.selection.active, insertString);
+			});
+		}
 	});
 
 	context.subscriptions.push(close, closeToIndent);

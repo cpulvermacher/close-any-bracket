@@ -5,7 +5,10 @@ import loadLanguages from 'prismjs/components/index';
 
 const BRACKET_CHARACTERS = new Set(["(", ")", "{", "}", "[", "]"]);
 
-export type ClosingBracket = ')' | ']' | '}';
+export type ClosingBracket = {
+    bracket: ')' | ']' | '}';
+    openedAtLine: number;
+};
 
 export type Token = string | Prism.Token;
 
@@ -14,7 +17,44 @@ export function isSingleToken(token: Prism.TokenStream): token is Token {
 }
 
 /** get bracket that should be closed at cursor position */
-export function getBracketToInsert(text: string, cursorOffset: number, languageId: string): ClosingBracket | null {
+export function getBracketToInsert(text: string, cursorOffset: number, languageId: string): string | null {
+    const missing = parseAndGetMissingBrackets(text, cursorOffset, languageId);
+    if (!missing) {
+        return null;
+    }
+
+    return missing[missing.length - 1].bracket;
+}
+
+export function closeToIndentAtLine(text: string, cursorOffset: number, languageId: string, lineNo: number, getLine: (line: number) => string
+): string | null {
+    const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
+
+    const missing = parseAndGetMissingBrackets(text, cursorOffset, languageId);
+    if (!missing) {
+        return null;
+    }
+
+    console.debug("Target indent:", targetIndent);
+    // iterate in reverse order until we find a bracket that was opened at less than targetIndent
+    let bracketsToClose = '';
+    for (let i = missing.length - 1; i >= 0; i--) {
+        const bracket = missing[i];
+        const indentForOpeningBracket = getIndentationLevelAtLine(bracket.openedAtLine, getLine);
+        console.debug(`Bracket ${bracket.bracket} opened at line ${bracket.openedAtLine} with indent ${indentForOpeningBracket}`);
+        if (indentForOpeningBracket < targetIndent) {
+            console.debug(`Stopping search`);
+            break;
+        }
+        bracketsToClose += bracket.bracket;
+    }
+
+
+    return bracketsToClose ? bracketsToClose + '\n' : null;
+}
+
+//TODO name
+export function parseAndGetMissingBrackets(text: string, cursorOffset: number, languageId: string): ClosingBracket[] | null {
     const grammar = getGrammar(languageId);
     if (!grammar) {
         console.log(`Couldn't find grammar for language ${languageId}`);
@@ -34,10 +74,8 @@ export function getBracketToInsert(text: string, cursorOffset: number, languageI
     if (!missing || missing.length === 0) {
         return null;
     }
-
-    return missing[missing.length - 1];
+    return missing;
 }
-
 
 /**
  * Maps VSCode language identifiers (https://code.visualstudio.com/docs/languages/identifiers)
@@ -119,11 +157,8 @@ export function getContextAtCursor(tokens: Prism.TokenStream, cursorOffset: numb
     return null;
 }
 
-/** Returns an array like ["}", ")"] with the brackets that are
- * still unclosed at cursor position, or [] if balanced. */
+/** Returns  brackets that are still unclosed at cursor position, or empty array if balanced. */
 export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: number): ClosingBracket[] {
-    //TODO add meta-information on where the bracket was opened (indentation level)
-
     if (isSingleToken(tokens)) {
         console.error(`Unexpected tokens type: ${typeof tokens}`);
         if (typeof tokens !== 'string') {
@@ -136,17 +171,19 @@ export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: numb
     // (should be the case if using getContextAtCursor())
     const expectedBrackets: ClosingBracket[] = [];
     let currentOffset = 0;
+    let lineNo = 0;
     for (const token of tokens) {
+        lineNo += getLineCount(token);
         const bracketString = getBracketString(token);
         if (bracketString) {
             if (bracketString === '(') {
-                expectedBrackets.push(')');
+                expectedBrackets.push({ bracket: ')', openedAtLine: lineNo });
             } else if (bracketString === '[') {
-                expectedBrackets.push(']');
+                expectedBrackets.push({ bracket: ']', openedAtLine: lineNo });
             } else if (bracketString === '{') {
-                expectedBrackets.push('}');
+                expectedBrackets.push({ bracket: '}', openedAtLine: lineNo });
             } else if (bracketString === ')' || bracketString === ']' || bracketString === '}') {
-                if (expectedBrackets && expectedBrackets[expectedBrackets.length - 1] === bracketString) {
+                if (expectedBrackets && expectedBrackets[expectedBrackets.length - 1].bracket === bracketString) {
                     expectedBrackets.pop();
                 } else {
                     console.error(`Encountered unexpected bracket "${bracketString}", but expected last item in ${expectedBrackets}`);
@@ -163,6 +200,18 @@ export function getMissingBrackets(tokens: Prism.TokenStream, cursorOffset: numb
         }
     }
     return expectedBrackets;
+}
+
+export function getLineCount(token: Token): number {
+    if (typeof token === 'string') {
+        return token.split('\n').length - 1;
+    }
+
+    if (isSingleToken(token.content)) {
+        return getLineCount(token.content);
+    }
+
+    return token.content.reduce((acc, cur) => acc + getLineCount(cur), 0);
 }
 
 /** returns either a opening/closing bracket character if the token represents one, or null. */
@@ -198,21 +247,11 @@ export function formatToken(token: Token): string {
 /**
  * Returns the indentation level at the given line.
  * 
- * If the line ion is empty, the previous line is used. 
- * 
  * @param lineNo line number
  * @param getLine function that returns the content of a specific line.
  */
 export function getIndentationLevelAtLine(lineNo: number, getLine: (line: number) => string): number {
-    let line: string;
-    do {
-        line = getLine(lineNo);
-        if (line.replaceAll('\n', '') === '') {
-            lineNo--;
-        } else {
-            break;
-        }
-    } while (lineNo >= 0);
+    const line = getLine(lineNo);
 
     let indentationLevel = 0;
     for (const c of line) {

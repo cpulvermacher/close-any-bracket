@@ -43,6 +43,12 @@
         "key": "alt+]",
         "mac": "ctrl+]",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "close-any-bracket.close-to-indent",
+        "key": "alt+shift+enter",
+        "mac": "ctrl+shift+enter",
+        "when": "editorTextFocus"
       }
     ]
   },
