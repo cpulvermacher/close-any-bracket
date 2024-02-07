@@ -1,5 +1,10 @@
 # Close Any Bracket
 
+[![Latest Release](https://flat.badgen.net/github/tag/cpulvermacher/close-any-bracket)](https://github.com/cpulvermacher/close-any-bracket/tags)
+[![Status](https://flat.badgen.net/github/checks/cpulvermacher/close-any-bracket)](https://github.com/cpulvermacher/close-any-bracket/actions/workflows/node.js.yml)
+[![License](https://flat.badgen.net/github/license/cpulvermacher/close-any-bracket)](./LICENSE)
+
+
 A Visual Studio Code extension adding the following commands:
 
 - `Close last open (, [, or {` closes the last open parenthesis, brace, or bracket. (default shortcut `Alt+]`, Mac: `Control+]`)
