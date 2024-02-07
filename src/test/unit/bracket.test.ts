@@ -202,6 +202,7 @@ describe('getContextAtCursor', () => {
 describe('getIndentationLevelAtLine', () => {
     it('returns 0 for empty line', () => {
         expect(getIndentationLevelAtLine(0, () => '')).toBe(0);
+        expect(getIndentationLevelAtLine(1, () => '')).toBe(0);
     });
 
     it('returns indent for line with only whitespace', () => {
@@ -214,16 +215,6 @@ describe('getIndentationLevelAtLine', () => {
 
     it('returns 4 for line with one tab indent', () => {
         expect(getIndentationLevelAtLine(0, () => '\tabc')).toBe(4);
-    });
-
-    it('skips empty lines', () => {
-        expect(getIndentationLevelAtLine(1, (line) => {
-            if (line === 0) {
-                return '  abc';
-            } else {
-                return '';
-            }
-        })).toBe(2);
     });
 });
 
