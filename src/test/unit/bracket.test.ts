@@ -86,6 +86,7 @@ describe('getGrammar', () => {
     it('maps from VSCode language to grammar', () => {
         expect(getGrammar('javascript')).toBe(languages['javascript']);
         expect(getGrammar('javascriptreact')).toBe(languages['jsx']);
+        expect(getGrammar('jsonc')).toBe(languages['json']);
         expect(getGrammar('typescript')).toBe(languages['typescript']);
         expect(getGrammar('typescriptreact')).toBe(languages['tsx']);
         expect(getGrammar('objective-c')).toBe(languages['objectivec']);

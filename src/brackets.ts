@@ -82,11 +82,13 @@ export function parseAndGetMissingBrackets(text: string, cursorOffset: number, l
  * to Grammar (https://prismjs.com/#supported-languages) or null if not found
  */
 export function getGrammar(languageId: string): Prism.Grammar | null {
-
     let grammarId: string;
     switch (languageId) {
         case 'javascriptreact':
             grammarId = 'jsx';
+            break;
+        case 'jsonc': // JSON with comments
+            grammarId = 'json';
             break;
         case 'typescriptreact':
             grammarId = 'tsx';
