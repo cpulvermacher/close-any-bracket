@@ -1,16 +1,20 @@
 # Change Log
 
-## [0.2.0]
+## [0.2.1]
 
-- (pre-release) Add `Close all open brackets to current indent` command
+- Fix support for JSON with Comments filetype
+
+## [0.2.0] (pre-release)
+
+- Add `Close all open brackets to current indent` command
 
 ## [0.1.1]
 
 - Add syntax support for ~297 languages
 
-## [0.1.0]
+## [0.1.0] (pre-release)
 
-- (pre-release) Add syntax support for ~297 languages
+- Add syntax support for ~297 languages
 
 ## [0.0.2]
 
