@@ -12,6 +12,9 @@ A Visual Studio Code extension adding the following commands:
 
 Supports syntax for close to 300 languages, using Visual Studio Code's language mode for the current document.
 
+![Demo](./images/demo.gif)
+
+
 ## Limitations
 
 - If _inside_ a string or comment, may close brackets opened in string (even if these don't mean anything in the language).
