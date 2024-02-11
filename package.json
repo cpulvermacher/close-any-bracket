@@ -60,7 +60,7 @@
     "watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npx vsce package",
     "pretest": "tsc -p ./",
-    "lint": "eslint src --ext ts && tsc --noEmit",
+    "lint": "eslint src --ext ts && tsc --noEmit && prettier src --check",
     "test": "vitest --run && node ./out/test/runTest.js"
   },
   "devDependencies": {
@@ -76,6 +76,7 @@
     "eslint": "^8.56.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
+    "prettier": "^3.2.5",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
   },

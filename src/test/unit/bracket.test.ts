@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import Prism, { languages } from 'prismjs';
 
-import { getBracketToInsert, getGrammar, getContextAtCursor, isSingleToken, getIndentationLevelAtLine } from '../../brackets';
+import {
+    getBracketToInsert,
+    getGrammar,
+    getContextAtCursor,
+    isSingleToken,
+    getIndentationLevelAtLine,
+} from '../../brackets';
 
 describe('getBracketToInsert', () => {
     it('closes open brackets', () => {
@@ -52,7 +58,6 @@ describe('getBracketToInsert', () => {
     it('closes open brackets within template string interpolation', () => {
         expect(getBracketToInsert('`${`', 3, 'javascript')).toBe('}');
         expect(getBracketToInsert('`${(`', 4, 'javascript')).toBe(')');
-
     });
 
     it.skip('does not close open brackets within template string interpolation if cursor outside template string', () => {
@@ -138,7 +143,7 @@ describe('getContextAtCursor', () => {
         const backtick = makeToken('punctuation', '`');
         const nested1 = makeToken('type', 'nest1');
         const nested2 = makeToken('type', 'n2');
-        const nested = makeToken('nested', [nested1, '__', nested2,]);
+        const nested = makeToken('nested', [nested1, '__', nested2]);
         const nestedTokens = ['abc', backtick, nested, 'x'];
 
         // entire string: abc`nest1__n2x
@@ -193,7 +198,6 @@ describe('getContextAtCursor', () => {
         expect(getContextAtCursor(tokens, 3)).toEqual(null);
     });
 
-
     it('returns null for empty token stream', () => {
         expect(getContextAtCursor([], 0)).toBe(null);
         expect(getContextAtCursor([], 1)).toBe(null);
@@ -225,7 +229,7 @@ function makeToken(type: string, content: Prism.TokenStream): Prism.Token {
         token.length = content.length;
     } else {
         token.length = content
-            .map(content => content.length)
+            .map((content) => content.length)
             .reduce((sum, current) => sum + current, 0);
     }
     return token;
