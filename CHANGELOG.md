@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.2]
+
+- Reduce VSIX package size
+
 ## [0.2.1]
 
 - Fix support for JSON with Comments filetype
