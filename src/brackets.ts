@@ -214,18 +214,19 @@ export function getMissingBrackets(
     for (const token of tokens) {
         lineNo += getLineCount(token);
         const bracketString = getBracketString(token);
-        if (bracketString) {
-            if (bracketString === '(') {
+        switch (bracketString) {
+            case '(':
                 expectedBrackets.push({ bracket: ')', openedAtLine: lineNo });
-            } else if (bracketString === '[') {
+                break;
+            case '[':
                 expectedBrackets.push({ bracket: ']', openedAtLine: lineNo });
-            } else if (bracketString === '{') {
+                break;
+            case '{':
                 expectedBrackets.push({ bracket: '}', openedAtLine: lineNo });
-            } else if (
-                bracketString === ')' ||
-                bracketString === ']' ||
-                bracketString === '}'
-            ) {
+                break;
+            case ')':
+            case ']':
+            case '}':
                 if (
                     expectedBrackets &&
                     expectedBrackets[expectedBrackets.length - 1].bracket ===
@@ -238,7 +239,6 @@ export function getMissingBrackets(
                     );
                     return [];
                 }
-            }
         }
         currentOffset += token.length;
 
