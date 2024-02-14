@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import { closeBracket, getIndentationLevelAtLine } from '../../brackets';
+import {
+    closeBracket,
+    closeToIndentAtLine,
+    getIndentationLevelAtLine,
+} from '../../brackets';
+import { closeToIndentExamples } from './close_to_indent_examples';
 
 describe('closeBracket', () => {
     it('closes open brackets', () => {
@@ -73,6 +78,81 @@ describe('closeBracket', () => {
 
     it('closes brackets before comment ', () => {
         expect(closeBracket('[ /*(*/', 7, 'javascript')).toBe(']');
+    });
+});
+
+describe('closeToIndentAtLine', () => {
+    function closeToIndent(text: string, cursorOffset: number, languageId) {
+        const lines = text.split('\n');
+        const lineNoAtCursor =
+            text.substring(0, cursorOffset).split('\n').length - 1;
+        const getLine = (line: number) => lines[line];
+
+        return closeToIndentAtLine(
+            text,
+            cursorOffset,
+            languageId,
+            lineNoAtCursor,
+            getLine
+        );
+    }
+
+    it('returns null if no brackets to close', () => {
+        expect(closeToIndent('{[(', 0, 'javascript')).toBe(null);
+    });
+
+    it('closes brackets in current line', () => {
+        expect(closeToIndent('{[(', 1, 'javascript')).toBe('}');
+        expect(closeToIndent('{[(', 2, 'javascript')).toBe(']}');
+        expect(closeToIndent('{[(', 3, 'javascript')).toBe(')]}');
+    });
+
+    function checkAllExpectsInMultilineString(
+        testString: string,
+        language: string
+    ) {
+        // for every line that contains "// expect: $STRING",
+        // verify that calling closeToIndentAtLine at the line (cursor at beginning of line)
+        // returns $STRING
+        const lines = testString.split('\n');
+        const getLine = (line: number) => lines[line];
+
+        const expectRegex = /expect: ?(\S*)/;
+        let numExpects = 0;
+        let offsetBeginningOfLine = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const match = lines[i].match(expectRegex);
+            if (match) {
+                numExpects++;
+                const expectedBrackets = match[1];
+                const result = closeToIndentAtLine(
+                    testString,
+                    offsetBeginningOfLine,
+                    language,
+                    i,
+                    getLine
+                );
+
+                //TODO both null and "" as possible return values?
+                if (result === null) {
+                    expect(expectedBrackets).toBe('');
+                } else {
+                    expect(result, `failure in line ${i}: ${lines[i]}`).toBe(
+                        expectedBrackets
+                    );
+                }
+            }
+
+            offsetBeginningOfLine += lines[i].length + 1;
+        }
+
+        expect(numExpects, 'At least one expect required!').toBeGreaterThan(0);
+    }
+
+    closeToIndentExamples.forEach((entry) => {
+        it(`closes to indent: ${entry.language} `, () => {
+            checkAllExpectsInMultilineString(entry.code, entry.language);
+        });
     });
 });
 
