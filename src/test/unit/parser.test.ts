@@ -1,87 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import Prism, { languages } from 'prismjs';
 
-import {
-    getBracketToInsert,
-    getGrammar,
-    getContextAtCursor,
-    isSingleToken,
-    getIndentationLevelAtLine,
-} from '../../brackets';
-
-describe('getBracketToInsert', () => {
-    it('closes open brackets', () => {
-        expect(getBracketToInsert('(', 1, 'javascript')).toBe(')');
-        expect(getBracketToInsert('{', 1, 'javascript')).toBe('}');
-        expect(getBracketToInsert('[', 1, 'javascript')).toBe(']');
-    });
-
-    it('inserts nothing at position 0', () => {
-        expect(getBracketToInsert('(', 0, 'javascript')).toBe(null);
-    });
-
-    it('ignores brackets if not relevant for language', () => {
-        expect(getBracketToInsert('{([', 2, 'latex')).toBe('}');
-        expect(getBracketToInsert('{([', 3, 'latex')).toBe(']');
-    });
-
-    it('ignores closed brackets', () => {
-        expect(getBracketToInsert('([{}])', 6, 'javascript')).toBe(null);
-    });
-
-    it('may not close mismatched open brackets', () => {
-        expect(getBracketToInsert('[(]', 3, 'javascript')).toBe(null);
-        expect(getBracketToInsert('[)]', 3, 'javascript')).toBe(null);
-    });
-
-    // strings
-    it('does not close open brackets within strings', () => {
-        expect(getBracketToInsert('"{(["', 2, 'javascript')).toBe(null);
-        expect(getBracketToInsert('"{(["', 3, 'javascript')).toBe(null);
-        expect(getBracketToInsert('"{(["', 4, 'javascript')).toBe(null);
-        expect(getBracketToInsert('"{(["', 5, 'javascript')).toBe(null);
-    });
-
-    it('does not close brackets before string if inside string', () => {
-        expect(getBracketToInsert('["(   "', 2, 'javascript')).toBe(null);
-    });
-
-    it('closes brackets before string ', () => {
-        expect(getBracketToInsert('["("', 4, 'javascript')).toBe(']');
-    });
-
-    // template strings
-    it('does not close open brackets within template strings', () => {
-        expect(getBracketToInsert('`{([`', 5, 'javascript')).toBe(null);
-    });
-
-    it('closes open brackets within template string interpolation', () => {
-        expect(getBracketToInsert('`${`', 3, 'javascript')).toBe('}');
-        expect(getBracketToInsert('`${(`', 4, 'javascript')).toBe(')');
-    });
-
-    it.skip('does not close open brackets within template string interpolation if cursor outside template string', () => {
-        expect(getBracketToInsert('`${`', 4, 'javascript')).toBe(null);
-        expect(getBracketToInsert('`${(`', 5, 'javascript')).toBe(null);
-    });
-
-    it.skip('closes brackets before template string', () => {
-        expect(getBracketToInsert('(`${[}`', 7, 'javascript')).toBe(')');
-    });
-
-    // comments
-    it('does not close open brackets within comments', () => {
-        expect(getBracketToInsert('/*{(["', 5, 'javascript')).toBe(null);
-    });
-
-    it.skip('does not close brackets before comment if inside comment', () => {
-        expect(getBracketToInsert('[ /*(*/', 4, 'javascript')).toBe(null);
-    });
-
-    it('closes brackets before comment ', () => {
-        expect(getBracketToInsert('[ /*(*/', 7, 'javascript')).toBe(']');
-    });
-});
+import { getContextAtCursor, getGrammar, isSingleToken } from '../../parser';
 
 describe('getGrammar', () => {
     it('returns null for unknown language', () => {
@@ -201,25 +121,6 @@ describe('getContextAtCursor', () => {
     it('returns null for empty token stream', () => {
         expect(getContextAtCursor([], 0)).toBe(null);
         expect(getContextAtCursor([], 1)).toBe(null);
-    });
-});
-
-describe('getIndentationLevelAtLine', () => {
-    it('returns 0 for empty line', () => {
-        expect(getIndentationLevelAtLine(0, () => '')).toBe(0);
-        expect(getIndentationLevelAtLine(1, () => '')).toBe(0);
-    });
-
-    it('returns indent for line with only whitespace', () => {
-        expect(getIndentationLevelAtLine(0, () => '   ')).toBe(3);
-    });
-
-    it('returns 1 for line with one space indent', () => {
-        expect(getIndentationLevelAtLine(0, () => ' abc')).toBe(1);
-    });
-
-    it('returns 4 for line with one tab indent', () => {
-        expect(getIndentationLevelAtLine(0, () => '\tabc')).toBe(4);
     });
 });
 

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { closeToIndentAtLine, getBracketToInsert } from './brackets';
+import { closeToIndentAtLine, closeBracket } from './brackets';
 
 export function deactivate() {
     /* nothing to do here */
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
             const cursorPosition = editor.selection.active;
             const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-            const insertString = getBracketToInsert(
+            const insertString = closeBracket(
                 editor.document.getText(),
                 cursorOffset,
                 editor.document.languageId
