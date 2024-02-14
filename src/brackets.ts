@@ -61,7 +61,7 @@ export function closeToIndentAtLine(
         bracketsToClose += bracket.bracket;
     }
 
-    return bracketsToClose ? bracketsToClose + '\n' : null;
+    return bracketsToClose;
 }
 
 /**

@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
             const cursorPosition = editor.selection.active;
             const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-            const insertString = closeToIndentAtLine(
+            const missingBrackets = closeToIndentAtLine(
                 editor.document.getText(),
                 cursorOffset,
                 editor.document.languageId,
@@ -52,7 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
                 (line) => getLine(editor.document, line)
             );
 
-            if (insertString) {
+            if (missingBrackets) {
+                const insertString = missingBrackets + '\n';
                 editor.edit((editBuilder) => {
                     editBuilder.insert(editor.selection.active, insertString);
                 });
