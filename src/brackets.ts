@@ -21,7 +21,7 @@ export function closeBracket(
  * E.g.
  * ```
  * if (abc) { // opened at level 0
- *     abc.def(); <- returns null, nothing to close in this line (indent level 4)
+ *     abc.def(); <- returns ``, nothing to close in this line (indent level 4)
  *     for (a of list) { // opened at level 4
  *         // ...
  *     // <- returns `}` (closing unclosed for-loop on same level)
@@ -34,17 +34,17 @@ export function closeToIndentAtLine(
     languageId: string,
     lineNo: number,
     getLine: (line: number) => string
-): string | null {
+): string {
+    let bracketsToClose = '';
     const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
 
     const missing = parse(text, cursorOffset, languageId);
     if (!missing) {
-        return null;
+        return bracketsToClose;
     }
 
     console.debug('Target indent:', targetIndent);
     // iterate in reverse order until we find a bracket that was opened at less than targetIndent
-    let bracketsToClose = '';
     for (let i = missing.length - 1; i >= 0; i--) {
         const bracket = missing[i];
         const indentForOpeningBracket = getIndentationLevelAtLine(

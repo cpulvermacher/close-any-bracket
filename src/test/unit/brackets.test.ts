@@ -97,8 +97,8 @@ describe('closeToIndentAtLine', () => {
         );
     }
 
-    it('returns null if no brackets to close', () => {
-        expect(closeToIndent('{[(', 0, 'javascript')).toBe(null);
+    it('returns empty string if no brackets to close', () => {
+        expect(closeToIndent('{[(', 0, 'javascript')).toBe('');
     });
 
     it('closes brackets in current line', () => {
@@ -133,14 +133,9 @@ describe('closeToIndentAtLine', () => {
                     getLine
                 );
 
-                //TODO both null and "" as possible return values?
-                if (result === null) {
-                    expect(expectedBrackets).toBe('');
-                } else {
-                    expect(result, `failure in line ${i}: ${lines[i]}`).toBe(
-                        expectedBrackets
-                    );
-                }
+                expect(result, `failure in line ${i}: ${lines[i]}`).toBe(
+                    expectedBrackets
+                );
             }
 
             offsetBeginningOfLine += lines[i].length + 1;
