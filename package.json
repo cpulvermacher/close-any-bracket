@@ -9,7 +9,7 @@
     "url": "https://github.com/cpulvermacher/close-any-bracket.git"
   },
   "engines": {
-    "vscode": "^1.83.1"
+    "vscode": "^1.86.0"
   },
   "categories": [
     "Other"
@@ -67,15 +67,15 @@
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/prismjs": "^1.26.3",
-    "@types/vscode": "^1.83.1",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@types/vscode": "^1.86.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
     "@vscode/test-electron": "^2.3.9",
     "@vscode/vsce": "^2.23.0",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",
     "glob": "^10.3.10",
-    "mocha": "^10.2.0",
+    "mocha": "^10.3.0",
     "prettier": "^3.2.5",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
