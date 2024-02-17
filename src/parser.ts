@@ -36,12 +36,15 @@ export function parse(
     console.debug('Tokenized input file:', allTokens);
 
     const context = getContextAtCursor(allTokens, cursorOffset);
-    if (context === null) {
+    if (context.tokens === null) {
         return null;
     }
-    console.debug('Current context', context);
 
-    const missing = getMissingBrackets(context, cursorOffset);
+    const missing = getMissingBrackets(
+        context.tokens,
+        cursorOffset - context.offset,
+        context.lineOffset
+    );
     if (!missing || missing.length === 0) {
         return null;
     }
@@ -87,10 +90,16 @@ export function isSingleToken(token: Prism.TokenStream): token is Token {
     return typeof token === 'string' || 'content' in token;
 }
 
+export type Context = {
+    tokens: Prism.TokenStream | null;
+    offset: number; // offset of the context from the beginning of the input tokens
+    lineOffset: number; // number of lines skipped before the start of the context
+};
+
 /** Returns the token or list of tokens that is relevant for the current cursor position.
  *
- * Might return a single token if we are a string, the entire file if
- * we get only one(top - level) token, or something in between.
+ * Might return a single token if we are a inside string, the entire file if
+ * we get only one (top-level) token, or something in between.
  *
  * Note that a cursor offset of x represents a position _before_ x! E.g. for
  * offset = 0, there are no tokens before 0, so this returns `null`.
@@ -98,21 +107,27 @@ export function isSingleToken(token: Prism.TokenStream): token is Token {
 export function getContextAtCursor(
     tokens: Prism.TokenStream,
     cursorOffset: number
-): Prism.TokenStream | null {
+): Context {
     if (cursorOffset <= 0) {
-        return null;
+        return { tokens: null, offset: 0, lineOffset: 0 };
     }
 
     if (isSingleToken(tokens)) {
-        return cursorOffset <= tokens.length ? tokens : null;
+        return {
+            tokens: cursorOffset <= tokens.length ? tokens : null,
+            offset: 0,
+            lineOffset: 0,
+        };
     }
 
     let currentOffset = 0;
+    let lineNo = 0;
     for (const token of tokens) {
         //note: case for token starts after cursor cannot happen (cursorOffset > 0)
         if (currentOffset + token.length < cursorOffset) {
             // token ends before cursorOffset - 1, skip
             currentOffset += token.length;
+            lineNo += getLineCount(token);
         } else if (typeof token !== 'string' && token.type === 'string') {
             // if cursor is on the last char of the token and it's a quote, the cursor is not inside the string anymore
             const tokenStr =
@@ -122,33 +137,39 @@ export function getContextAtCursor(
                 currentOffset + token.length === cursorOffset &&
                 tokenStr[0] === tokenStr[token.length - 1]
             ) {
-                return tokens;
+                return { tokens, offset: 0, lineOffset: 0 };
             } else {
-                return token;
+                return {
+                    tokens: token,
+                    offset: currentOffset,
+                    lineOffset: lineNo,
+                };
             }
         } else if (
             typeof token === 'string' ||
             typeof token.content === 'string'
         ) {
-            console.debug(
-                `got raw string token ${formatToken(token)}, returning`
-            );
             // token includes cursorOffset - 1
-            return tokens;
+            return { tokens, offset: 0, lineOffset: 0 };
         } else {
             // cursor is inside or just after token
             console.debug(
                 `found token ${formatToken(token)} before cursor, descending`
             );
-            return getContextAtCursor(
+            const context = getContextAtCursor(
                 token.content,
                 cursorOffset - currentOffset
             );
+            return {
+                tokens: context.tokens,
+                offset: context.offset + currentOffset,
+                lineOffset: context.lineOffset + lineNo,
+            };
         }
     }
 
     console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
-    return null;
+    return { tokens: null, offset: 0, lineOffset: 0 };
 }
 
 export function getBracketString(token: Token): string | null {
@@ -182,6 +203,39 @@ export function formatToken(token: Token): string {
     return token.type;
 }
 
+/** converts parsed `tokens` back into a string */
+export function printTokenStream(tokens: Prism.TokenStream): string {
+    if (typeof tokens === 'string') {
+        return tokens;
+    }
+    if (isSingleToken(tokens)) {
+        return printTokenStream(tokens.content);
+    }
+
+    let result = '';
+    for (const token of tokens) {
+        result += printTokenStream(token);
+    }
+    return result;
+}
+
+/** marks the given offsets in the input text with `>><<` */
+export function printCursorOffsets(
+    text: string,
+    cursorOffsets: number[]
+): string {
+    cursorOffsets.sort((a, b) => a - b);
+    let result = '';
+    let currentOffset = 0;
+    for (const offset of cursorOffsets) {
+        result += text.substring(currentOffset, offset);
+        result += '>><<';
+        currentOffset = offset;
+    }
+    result += text.substring(currentOffset);
+    return result;
+}
+
 export function getLineCount(token: Token): number {
     if (typeof token === 'string') {
         return token.split('\n').length - 1;
@@ -194,15 +248,16 @@ export function getLineCount(token: Token): number {
     return token.content.reduce((acc, cur) => acc + getLineCount(cur), 0);
 }
 
-/** Returns  brackets that are still unclosed at cursor position, or empty array if balanced. */
+/** Returns brackets that are still unclosed at cursor position, or empty array if balanced. */
 export function getMissingBrackets(
     tokens: Prism.TokenStream,
-    cursorOffset: number
+    cursorOffset: number,
+    lineOffset: number
 ): ClosingBracket[] {
     if (isSingleToken(tokens)) {
         console.error(`Unexpected tokens type: ${typeof tokens}`);
         if (typeof tokens !== 'string') {
-            return getMissingBrackets(tokens.content, cursorOffset);
+            return getMissingBrackets(tokens.content, cursorOffset, lineOffset);
         }
         return [];
     }
@@ -211,7 +266,7 @@ export function getMissingBrackets(
     // (should be the case if using getContextAtCursor())
     const expectedBrackets: ClosingBracket[] = [];
     let currentOffset = 0;
-    let lineNo = 0;
+    let lineNo = lineOffset;
     for (const token of tokens) {
         lineNo += getLineCount(token);
         const bracketString = getBracketString(token);

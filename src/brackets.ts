@@ -36,14 +36,13 @@ export function closeToIndentAtLine(
     getLine: (line: number) => string
 ): string {
     let bracketsToClose = '';
-    const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
-
     const missing = parse(text, cursorOffset, languageId);
     if (!missing) {
         return bracketsToClose;
     }
 
-    console.debug('Target indent:', targetIndent);
+    const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
+    console.debug('Target indent:', targetIndent, 'missing brackets:', missing);
     // iterate in reverse order until we find a bracket that was opened at less than targetIndent
     for (let i = missing.length - 1; i >= 0; i--) {
         const bracket = missing[i];
