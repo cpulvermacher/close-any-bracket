@@ -226,6 +226,27 @@ a[title="{(["]
 */
 `;
 
+const html = `
+<html>
+<head>
+    <title>{[(</title>
+    <!-- expect:
+    -->
+    <script>
+        ${javascript}
+    </script>
+
+<!-- expect:
+-->
+</head>
+<body>
+
+<!-- expect:
+-->
+</body>
+</html>
+`;
+
 /** maps VSCode language identifier to code example */
 export const closeToIndentExamples = [
     { language: 'javascript', code: javascript },
@@ -237,4 +258,5 @@ export const closeToIndentExamples = [
     { language: 'csharp', code: csharp },
     { language: 'shellscript', code: shellscript },
     { language: 'css', code: css },
+    { language: 'html', code: html },
 ];
