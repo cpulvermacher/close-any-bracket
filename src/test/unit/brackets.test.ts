@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
     closeBracket,
@@ -58,6 +58,7 @@ describe('closeBracket', () => {
         expect(closeBracket('`${(`', 4, 'javascript')).toBe(')');
     });
 
+    //Note: sadly this doesn't work because while brackets are unclosed, the parser doesn't recognize the template string
     it.skip('does not close open brackets within template string interpolation if cursor outside template string', () => {
         expect(closeBracket('`${`', 4, 'javascript')).toBe(null);
         expect(closeBracket('`${(`', 5, 'javascript')).toBe(null);

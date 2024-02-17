@@ -7,4 +7,7 @@
     },
     "typescript.tsc.autoDetect": "off",
     "typescript.format.semicolons": "insert",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+    }
 }
