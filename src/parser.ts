@@ -1,6 +1,6 @@
 import Prism from 'prismjs';
-Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
 import loadLanguages from 'prismjs/components/index';
+Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
 
 import { formatToken } from './debug';
 
@@ -35,7 +35,6 @@ export function parse(
     }
 
     const allTokens = Prism.tokenize(text, grammar);
-    console.debug('Tokenized input file:', allTokens);
 
     const context = getContextAtCursor(allTokens, cursorOffset);
     if (context.tokens === null) {

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { closeToIndentAtLine, closeBracket } from './brackets';
+import { closeBracket, closeToIndentAtLine } from './brackets';
 
 export function deactivate() {
     /* nothing to do here */

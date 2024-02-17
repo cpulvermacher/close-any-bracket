@@ -50,11 +50,7 @@ export function closeToIndentAtLine(
             bracket.openedAtLine,
             getLine
         );
-        console.debug(
-            `Bracket ${bracket.bracket} opened at line ${bracket.openedAtLine} with indent ${indentForOpeningBracket}`
-        );
         if (indentForOpeningBracket < targetIndent) {
-            console.debug(`Stopping search`);
             break;
         }
         bracketsToClose += bracket.bracket;
