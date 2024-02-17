@@ -236,6 +236,10 @@ const html = `
         ${javascript}
     </script>
 
+    <style>
+        ${css}
+    </style>
+
 <!-- expect:
 -->
 </head>
