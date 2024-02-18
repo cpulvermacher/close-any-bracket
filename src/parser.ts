@@ -204,7 +204,12 @@ export function getLineCount(token: Token): number {
     return token.content.reduce((acc, cur) => acc + getLineCount(cur), 0);
 }
 
-/** Returns brackets that are still unclosed at cursor position, or empty array if balanced. */
+/** Returns brackets that are still unclosed at cursor position, or empty array if balanced.
+ *
+ * @param tokens token stream to search for missing brackets
+ * @param cursorOffset offset inside `tokens` (will stop search here)
+ * @param lineOffset number of lines that come before `tokens`
+ */
 export function getMissingBrackets(
     tokens: Prism.TokenStream,
     cursorOffset: number,
@@ -225,39 +230,44 @@ export function getMissingBrackets(
     let lineNo = lineOffset;
     for (const token of tokens) {
         lineNo += getLineCount(token);
-        const bracketString = getBracketString(token);
-        switch (bracketString) {
-            case '(':
-                expectedBrackets.push({ bracket: ')', openedAtLine: lineNo });
-                break;
-            case '[':
-                expectedBrackets.push({ bracket: ']', openedAtLine: lineNo });
-                break;
-            case '{':
-                expectedBrackets.push({ bracket: '}', openedAtLine: lineNo });
-                break;
-            case ')':
-            case ']':
-            case '}':
-                if (
-                    expectedBrackets &&
-                    expectedBrackets[expectedBrackets.length - 1].bracket ===
-                        bracketString
-                ) {
-                    expectedBrackets.pop();
-                } else {
-                    console.error(
-                        `Encountered unexpected bracket "${bracketString}", but expected last item in ${expectedBrackets}`
-                    );
-                    return [];
-                }
-        }
-        currentOffset += token.length;
+        matchBracketsInToken(token, expectedBrackets, lineNo);
 
+        currentOffset += token.length;
         //no need to check beyond cursor
         if (currentOffset >= cursorOffset) {
             break;
         }
     }
     return expectedBrackets;
+}
+
+/** If token is a bracket, adds to brackets if opening, or removes matching last bracket if closing. */
+function matchBracketsInToken(
+    token: string | Prism.Token,
+    brackets: ClosingBracket[],
+    lineNo: number
+) {
+    const bracket = getBracketString(token);
+    switch (bracket) {
+        case '(':
+            brackets.push({ bracket: ')', openedAtLine: lineNo });
+            break;
+        case '[':
+            brackets.push({ bracket: ']', openedAtLine: lineNo });
+            break;
+        case '{':
+            brackets.push({ bracket: '}', openedAtLine: lineNo });
+            break;
+        case ')':
+        case ']':
+        case '}':
+            const lastBracket = brackets[brackets.length - 1]?.bracket;
+            if (bracket === lastBracket) {
+                brackets.pop();
+            } else {
+                throw new Error(
+                    `Encountered unexpected bracket "${bracket}", but expected ${lastBracket}`
+                );
+            }
+    }
 }

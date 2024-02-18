@@ -28,8 +28,8 @@ describe('closeBracket', () => {
     });
 
     it('may not close mismatched open brackets', () => {
-        expect(closeBracket('[(]', 3, 'javascript')).toBe(null);
-        expect(closeBracket('[)]', 3, 'javascript')).toBe(null);
+        expect(() => closeBracket('[(]', 3, 'javascript')).toThrow();
+        expect(() => closeBracket('[)]', 3, 'javascript')).toThrow();
     });
 
     // strings
