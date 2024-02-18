@@ -1,7 +1,7 @@
 {
   "name": "close-any-bracket",
   "displayName": "Close Any Bracket",
-  "description": "Close the last open parenthesis, brace, or bracket",
+  "description": "Automatically close open braces, brackets, or parentheses in the right order.",
   "publisher": "cpulvermacher",
   "version": "0.2.2",
   "repository": {

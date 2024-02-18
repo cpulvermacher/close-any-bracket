@@ -5,17 +5,19 @@
 [![License](https://flat.badgen.net/github/license/cpulvermacher/close-any-bracket)](./LICENSE)
 
 
-A Visual Studio Code extension adding the following commands:
-
-- `Close last open (, [, or {` closes the last open parenthesis, brace, or bracket. (default shortcut `Alt+]`, Mac: `Control+]`)
-- `Close all open brackets to current indent` checks the indentation level for the current line and closes all unclosed `(, [, {` at this indentation level or deeper. (default shortcut: `Alt+Shift+Enter`, Mac: `Control+Shift+Enter`)
-
-Supports syntax for close to 300 languages, using Visual Studio Code's language mode for the current document.
+A Visual Studio Code extension to automatically close open braces, brackets, or parentheses in the right order.
 
 ![Demo](./images/demo.gif)
+
+## Features
+
+- **Close last open (, [, or {** (default shortcut <kbd>Alt</kbd>+<kbd>]</kbd>, Mac: <kbd>Control</kbd>+<kbd>]</kbd>)
+- **Close all open brackets to current indent** - Checks the indentation level for the current line and closes all unclosed `(`, `[`, or `{` at this indentation level or deeper. (default shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>, Mac: <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>)
+- Supports close to 300 languages including JavaScript, TypeScript, CSS, JSON, Python, Java, Go, C/C++/C#, HTML (with embedded JavaScript or CSS).
 
 
 ## Limitations
 
-- If _inside_ a string or comment, may close brackets opened in string (even if these don't mean anything in the language).
-- Some deeply nested structures in some languages may not be supported (e.g. brace inside a string interpolation inside a template string)
+- Currently does not consider if brackets are already closed after the cursor position.
+- Brackets are inserted at the cursor position without any regard for aesthetics, so this works best if combined with automatic formatting.
+- Some nested structures like template strings may not work well, in particular if the syntax is not valid while you're editing.
