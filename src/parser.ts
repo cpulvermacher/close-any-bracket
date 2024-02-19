@@ -260,7 +260,7 @@ function matchBracketsInToken(
             break;
         case ')':
         case ']':
-        case '}':
+        case '}': {
             const lastBracket = brackets[brackets.length - 1]?.bracket;
             if (bracket === lastBracket) {
                 brackets.pop();
@@ -269,5 +269,6 @@ function matchBracketsInToken(
                     `Encountered unexpected bracket "${bracket}", but expected ${lastBracket}`
                 );
             }
+        }
     }
 }
