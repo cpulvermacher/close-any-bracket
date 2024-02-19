@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.3]
+
+- Fix support for nested context (e.g. JS/CSS inside HTML)
+
 ## [0.2.2]
 
 - Reduce VSIX package size
