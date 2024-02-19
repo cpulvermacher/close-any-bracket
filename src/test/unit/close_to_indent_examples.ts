@@ -132,6 +132,26 @@ somethingNested = {
 // expect:
 `;
 
+const cpp = `
+// expect:
+#include <iostream>
+
+int main(
+    int argc,
+    char *argv[]
+    // expect:
+// expect: )
+) {
+    // expect:
+    // ignored brackets: {[(
+    const std::string ignored = "{[(";
+    // expect:
+
+// expect: }
+}
+// expect:
+`;
+
 const csharp = `
 class Program
 {
@@ -259,6 +279,7 @@ export const closeToIndentExamples = [
     { language: 'go', code: golang },
     { language: 'java', code: java },
     { language: 'python', code: python },
+    { language: 'cpp', code: cpp },
     { language: 'csharp', code: csharp },
     { language: 'shellscript', code: shellscript },
     { language: 'css', code: css },
