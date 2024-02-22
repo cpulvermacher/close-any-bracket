@@ -12,6 +12,8 @@ describe('closeBracket', () => {
         expect(closeBracket('(', 1, 'javascript')).toBe(')');
         expect(closeBracket('{', 1, 'javascript')).toBe('}');
         expect(closeBracket('[', 1, 'javascript')).toBe(']');
+        expect(closeBracket('(', 1, 'makefile')).toBe(')');
+        expect(closeBracket('{', 1, 'makefile')).toBe('}');
     });
 
     it('inserts nothing at position 0', () => {
@@ -21,6 +23,7 @@ describe('closeBracket', () => {
     it('ignores brackets if not relevant for language', () => {
         expect(closeBracket('{([', 2, 'latex')).toBe('}');
         expect(closeBracket('{([', 3, 'latex')).toBe(']');
+        expect(closeBracket('[', 1, 'makefile')).toBe(null);
     });
 
     it('ignores closed brackets', () => {
@@ -71,6 +74,8 @@ describe('closeBracket', () => {
     // comments
     it('does not close open brackets within comments', () => {
         expect(closeBracket('/*{(["', 5, 'javascript')).toBe(null);
+        expect(closeBracket('//([{', 5, 'javascript')).toBe(null);
+        expect(closeBracket('#([{', 4, 'makefile')).toBe(null);
     });
 
     it.skip('does not close brackets before comment if inside comment', () => {

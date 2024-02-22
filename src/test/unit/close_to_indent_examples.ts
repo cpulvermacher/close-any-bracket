@@ -271,6 +271,25 @@ const html = `
 </html>
 `;
 
+const sql = `
+-- [(
+
+/*
+[(
+*/
+
+-- expect:
+
+-- Create a new table
+CREATE TABLE Employees (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(100)
+    -- expect:
+-- expect: )
+);
+-- expect:
+`;
+
 /** maps VSCode language identifier to code example */
 export const closeToIndentExamples = [
     { language: 'javascript', code: javascript },
@@ -284,4 +303,5 @@ export const closeToIndentExamples = [
     { language: 'shellscript', code: shellscript },
     { language: 'css', code: css },
     { language: 'html', code: html },
+    { language: 'sql', code: sql },
 ];
