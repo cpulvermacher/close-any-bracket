@@ -130,9 +130,9 @@ export function getContextAtCursor(
             currentOffset += token.length;
             lineNo += getLineCount(token);
         } else if (typeof token !== 'string' && token.type === 'string') {
+            // cursor inside a string token for current grammar
+            const tokenStr = token.content as string;
             // if cursor is on the last char of the token and it's a quote, the cursor is not inside the string anymore
-            const tokenStr =
-                typeof token === 'string' ? token : (token.content as string);
             if (
                 token.length > 1 &&
                 currentOffset + token.length === cursorOffset &&
