@@ -120,37 +120,22 @@ export function getContextAtCursor(
             // token ends before cursorOffset - 1, skip
             currentOffset += token.length;
             lineNo += getLineCount(token);
-        } else if (typeof token !== 'string' && token.type === 'string') {
-            // cursor inside a string token for current grammar
+        } else if (
+            typeof token !== 'string' &&
+            (token.type === 'string' || token.type === 'comment')
+        ) {
             if (
                 token.length > 1 &&
                 currentOffset + token.length === cursorOffset
             ) {
+                // cursor on last char of string/comment token (e.g. _before_ a quote or slash)
                 return {
                     tokens,
                     offset: 0,
                     lineOffset: 0,
                 };
             } else {
-                return {
-                    tokens: token,
-                    offset: currentOffset,
-                    lineOffset: lineNo,
-                };
-            }
-        } else if (typeof token !== 'string' && token.type === 'comment') {
-            if (
-                token.length > 1 &&
-                currentOffset + token.length === cursorOffset
-            ) {
-                // cursor on last char of comment token
-                return {
-                    tokens,
-                    offset: 0,
-                    lineOffset: 0,
-                };
-            } else {
-                // cursor inside a comment token
+                // cursor inside a string/comment
                 return {
                     tokens: token,
                     offset: currentOffset,
