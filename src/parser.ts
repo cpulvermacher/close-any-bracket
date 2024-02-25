@@ -11,9 +11,7 @@ export type ClosingBracket = {
     openedAtLine: number;
 };
 
-export type Token =
-    | string
-    | Prism.Token; /** returns either a opening/closing bracket character if the token represents one, or null. */
+export type Token = string | Prism.Token;
 
 /**
  * Parses the given text to find missing closing brackets at the specified cursor offset.
@@ -197,6 +195,7 @@ export function getContextAtCursor(
     return { tokens: null, offset: 0, lineOffset: 0 };
 }
 
+/** returns either a opening/closing bracket character if the token represents one, or null. */
 export function getBracketString(token: Token): string | null {
     if (typeof token === 'string' || token.type !== 'punctuation') {
         return null;
