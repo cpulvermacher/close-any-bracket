@@ -122,26 +122,15 @@ export function getContextAtCursor(
             lineNo += getLineCount(token);
         } else if (
             typeof token !== 'string' &&
-            (token.type === 'string' || token.type === 'comment')
+            (token.type === 'string' || token.type === 'comment') &&
+            currentOffset + token.length > cursorOffset
         ) {
-            if (
-                token.length > 1 &&
-                currentOffset + token.length === cursorOffset
-            ) {
-                // cursor on last char of string/comment token (e.g. _before_ a quote or slash)
-                return {
-                    tokens,
-                    offset: 0,
-                    lineOffset: 0,
-                };
-            } else {
-                // cursor inside a string/comment
-                return {
-                    tokens: token,
-                    offset: currentOffset,
-                    lineOffset: lineNo,
-                };
-            }
+            // cursor inside a string/comment and not after the last character
+            return {
+                tokens: token,
+                offset: currentOffset,
+                lineOffset: lineNo,
+            };
         } else if (
             typeof token === 'string' ||
             typeof token.content === 'string'

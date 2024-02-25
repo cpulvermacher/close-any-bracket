@@ -119,17 +119,6 @@ describe('getContextAtCursor', () => {
         expectContext(getContextAtCursor(tokens, 6), null);
     });
 
-    it('returns string token if cursor inside the string (single character string)', () => {
-        const bracket = makeToken('punctuation', '[');
-        const someString = makeToken('string', '"');
-        const tokens = [bracket, someString];
-
-        expectContext(getContextAtCursor(tokens, 0), null);
-        expectContext(getContextAtCursor(tokens, 1), tokens);
-        expectContext(getContextAtCursor(tokens, 2), someString, 1, 0); // cursor after opening "
-        expectContext(getContextAtCursor(tokens, 3), null);
-    });
-
     it('returns null for empty token stream', () => {
         expectContext(getContextAtCursor([], 0), null);
         expectContext(getContextAtCursor([], 1), null);
