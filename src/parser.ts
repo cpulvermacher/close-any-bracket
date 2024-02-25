@@ -3,15 +3,12 @@ import loadLanguages from 'prismjs/components/index';
 Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
 
 import { formatToken } from './debug';
-
-export const BRACKET_CHARACTERS = new Set(['(', ')', '{', '}', '[', ']']);
+import { getBracketString, getLineCount, isSingleToken } from './token';
 
 export type ClosingBracket = {
     bracket: ')' | ']' | '}';
     openedAtLine: number;
 };
-
-export type Token = string | Prism.Token;
 
 /**
  * Parses the given text to find missing closing brackets at the specified cursor offset.
@@ -83,10 +80,6 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
     }
 
     return Prism.languages[grammarId] || null;
-}
-
-export function isSingleToken(token: Prism.TokenStream): token is Token {
-    return typeof token === 'string' || 'content' in token;
 }
 
 export type Context = {
@@ -193,38 +186,6 @@ export function getContextAtCursor(
 
     console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
     return { tokens: null, offset: 0, lineOffset: 0 };
-}
-
-/** returns either a opening/closing bracket character if the token represents one, or null. */
-export function getBracketString(token: Token): string | null {
-    if (typeof token === 'string' || token.type !== 'punctuation') {
-        return null;
-    }
-    if (typeof token.content !== 'string') {
-        console.log(
-            'getBracketString: found punctuation token with unexpected content',
-            token.content
-        );
-        return null;
-    }
-
-    if (BRACKET_CHARACTERS.has(token.content)) {
-        return token.content;
-    } else {
-        return null;
-    }
-}
-
-export function getLineCount(token: Token): number {
-    if (typeof token === 'string') {
-        return token.split('\n').length - 1;
-    }
-
-    if (isSingleToken(token.content)) {
-        return getLineCount(token.content);
-    }
-
-    return token.content.reduce((acc, cur) => acc + getLineCount(cur), 0);
 }
 
 /** Returns brackets that are still unclosed at cursor position, or empty array if balanced.

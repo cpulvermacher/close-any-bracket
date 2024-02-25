@@ -1,12 +1,8 @@
 import Prism, { languages } from 'prismjs';
 import { describe, expect, it } from 'vitest';
 
-import {
-    Context,
-    getContextAtCursor,
-    getGrammar,
-    isSingleToken,
-} from '../../parser';
+import { Context, getContextAtCursor, getGrammar } from '../../parser';
+import { isSingleToken } from '../../token';
 
 describe('getGrammar', () => {
     it('returns null for unknown language', () => {
