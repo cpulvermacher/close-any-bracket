@@ -44,11 +44,15 @@ describe('closeBracket', () => {
     });
 
     it('does not close brackets before string if inside string', () => {
-        expect(closeBracket('["(   "', 2, 'javascript')).toBe(null);
-    });
+        expect(closeBracket('["("', 1, 'javascript')).toBe(']'); //before "
+        expect(closeBracket('["("', 2, 'javascript')).toBe(null);
+        expect(closeBracket('["("', 3, 'javascript')).toBe(null);
+        expect(closeBracket('["("', 4, 'javascript')).toBe(']'); //after "
 
-    it('closes brackets before string ', () => {
-        expect(closeBracket('["("', 4, 'javascript')).toBe(']');
+        expect(closeBracket("['('", 1, 'javascript')).toBe(']'); //before '
+        expect(closeBracket("['('", 2, 'javascript')).toBe(null);
+        expect(closeBracket("['('", 3, 'javascript')).toBe(null);
+        expect(closeBracket("['('", 4, 'javascript')).toBe(']'); //after '
     });
 
     // template strings
@@ -78,12 +82,25 @@ describe('closeBracket', () => {
         expect(closeBracket('#([{', 4, 'makefile')).toBe(null);
     });
 
-    it.skip('does not close brackets before comment if inside comment', () => {
-        expect(closeBracket('[ /*(*/', 4, 'javascript')).toBe(null);
+    it('does not close brackets before comment if inside comment', () => {
+        expect(closeBracket('([{ /* */', 5, 'javascript')).toBe(null);
+        expect(closeBracket('([{ /* */', 6, 'javascript')).toBe(null);
+        expect(closeBracket('([{ /* */', 7, 'javascript')).toBe(null);
+
+        expect(closeBracket('([{ // ', 6, 'javascript')).toBe(null);
+    });
+
+    it('does not close brackets before comment at end of comment (multi-line comment)', () => {
+        expect(closeBracket('([{ /* */', 8, 'javascript')).toBe(null);
+    });
+
+    it.skip('does not close brackets before comment at end of comment (single-line comment)', () => {
+        expect(closeBracket('([{ // ', 7, 'javascript')).toBe(null);
     });
 
     it('closes brackets before comment ', () => {
         expect(closeBracket('[ /*(*/', 7, 'javascript')).toBe(']');
+        expect(closeBracket('[ // \n', 6, 'javascript')).toBe(']');
     });
 });
 

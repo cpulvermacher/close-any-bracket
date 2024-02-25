@@ -99,7 +99,7 @@ export type Context = {
 
 /** Returns the token or list of tokens that is relevant for the current cursor position.
  *
- * Might return a single token if we are a inside string, the entire file if
+ * Might return a single token if we are a inside string/comment, or the entire file if
  * we get only one (top-level) token, or something in between.
  *
  * Note that a cursor offset of x represents a position _before_ x! E.g. for
@@ -138,8 +138,31 @@ export function getContextAtCursor(
                 currentOffset + token.length === cursorOffset &&
                 tokenStr[0] === tokenStr[token.length - 1]
             ) {
-                return { tokens, offset: 0, lineOffset: 0 };
+                return {
+                    tokens,
+                    offset: 0,
+                    lineOffset: 0,
+                };
             } else {
+                return {
+                    tokens: token,
+                    offset: currentOffset,
+                    lineOffset: lineNo,
+                };
+            }
+        } else if (typeof token !== 'string' && token.type === 'comment') {
+            if (
+                token.length > 1 &&
+                currentOffset + token.length === cursorOffset
+            ) {
+                // cursor on last char of comment token
+                return {
+                    tokens,
+                    offset: 0,
+                    lineOffset: 0,
+                };
+            } else {
+                // cursor inside a comment token
                 return {
                     tokens: token,
                     offset: currentOffset,
@@ -150,6 +173,7 @@ export function getContextAtCursor(
             typeof token === 'string' ||
             typeof token.content === 'string'
         ) {
+            // cursor inside some other basic token (no nested tokens)
             // token includes cursorOffset - 1
             return { tokens, offset: 0, lineOffset: 0 };
         } else {
