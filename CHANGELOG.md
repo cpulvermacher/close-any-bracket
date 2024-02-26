@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.4]
+
+- Shouldn't close anything if inside a comment
+
 ## [0.2.3]
 
 - Fix support for nested context (e.g. JS/CSS inside HTML)
