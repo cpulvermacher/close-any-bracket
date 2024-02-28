@@ -18,5 +18,6 @@ A Visual Studio Code extension to automatically close open braces, brackets, or 
 
 ## Limitations
 
+- Currently does not consider if brackets are already closed after the cursor position.
 - Brackets are inserted at the cursor position without any regard for aesthetics, so this works best if combined with automatic formatting.
 - Some nested structures like template strings may not work well, in particular if the syntax is not valid while you're editing.
