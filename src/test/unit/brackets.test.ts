@@ -131,13 +131,14 @@ describe('closeToIndentAtLine', () => {
     });
 
     function checkAllExpectsInMultilineString(
-        testString: string,
-        language: string
+        example: string,
+        language: string,
+        untilCursor: boolean
     ) {
         // for every line that contains "// expect: $STRING",
         // verify that calling closeToIndentAtLine at the line (cursor at beginning of line)
         // returns $STRING
-        const lines = testString.split('\n');
+        const lines = example.split('\n');
         const getLine = (line: number) => lines[line];
 
         const expectRegex = /expect: ?(\S*)/;
@@ -147,16 +148,20 @@ describe('closeToIndentAtLine', () => {
             const match = lines[i].match(expectRegex);
             if (match) {
                 numExpects++;
+                const code = !untilCursor
+                    ? lines.slice(0, i + 1).join('\n')
+                    : example;
                 const expectedBrackets = match[1];
                 const result = closeToIndentAtLine(
-                    testString,
+                    code,
                     offsetBeginningOfLine,
                     language,
                     i,
-                    getLine
+                    getLine,
+                    { onlySearchClosingBracketsUntilCursor: untilCursor }
                 );
 
-                expect(result, `failure in line ${i}: ${lines[i]}`).toBe(
+                expect(result, `failure in last line of: ${code}`).toBe(
                     expectedBrackets
                 );
             }
@@ -169,7 +174,20 @@ describe('closeToIndentAtLine', () => {
 
     closeToIndentExamples.forEach((entry) => {
         it(`closes to indent: ${entry.language} `, () => {
-            checkAllExpectsInMultilineString(entry.code, entry.language);
+            // for these tests, ignore all brackets after cursor
+            checkAllExpectsInMultilineString(entry.code, entry.language, true);
+
+            // but check that the default behaviour (brackets closed after cursor won't be closed again)
+            // as well by truncating the example code
+            // The 'html' example contains embedded javascript, but this is not detected until the
+            // closing </script> tag, so this doesn't work so well.
+            if (entry.language !== 'html') {
+                checkAllExpectsInMultilineString(
+                    entry.code,
+                    entry.language,
+                    false
+                );
+            }
         });
     });
 });

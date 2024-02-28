@@ -5,9 +5,19 @@ Prism.manual = true; //disable automatic highlighting (we have no document where
 import { formatToken } from './debug';
 import { getBracketString, getLineCount, isSingleToken } from './token';
 
-export type ClosingBracket = {
+export type Bracket = {
     bracket: ')' | ']' | '}';
+    openedAt: number; //cursor offset
     openedAtLine: number;
+    closedAt?: number; //cursor offset, if closed
+};
+
+export type ParseOptions = {
+    onlySearchClosingBracketsUntilCursor?: boolean;
+};
+
+export const defaultParseOptions: ParseOptions = {
+    onlySearchClosingBracketsUntilCursor: false,
 };
 
 /**
@@ -21,8 +31,9 @@ export type ClosingBracket = {
 export function parse(
     text: string,
     cursorOffset: number,
-    languageId: string
-): ClosingBracket[] | null {
+    languageId: string,
+    options: ParseOptions = defaultParseOptions
+): Bracket[] | null {
     const grammar = getGrammar(languageId);
     if (!grammar) {
         console.log(`Couldn't find grammar for language ${languageId}`);
@@ -36,15 +47,28 @@ export function parse(
         return null;
     }
 
-    const missing = getMissingBrackets(
-        context.tokens,
-        cursorOffset - context.offset,
-        context.lineOffset
-    );
-    if (!missing || missing.length === 0) {
-        return null;
-    }
-    return missing;
+    const brackets = getBrackets(context.tokens, context.lineOffset);
+
+    //get all brackets opened before cursor, but unclosed (before or after cursor)
+    const isUnclosed = (bracket: Bracket) => {
+        if (bracket.openedAt >= cursorOffset - context.offset) {
+            return false;
+        }
+
+        if (
+            !!options.onlySearchClosingBracketsUntilCursor &&
+            bracket.closedAt &&
+            bracket.closedAt >= cursorOffset - context.offset
+        ) {
+            return true;
+        }
+
+        return bracket.closedAt === undefined;
+    };
+
+    const missing = brackets.filter(isUnclosed);
+
+    return missing.length > 0 ? missing : null;
 }
 
 /**
@@ -159,71 +183,80 @@ export function getContextAtCursor(
     return { tokens: null, offset: 0, lineOffset: 0 };
 }
 
-/** Returns brackets that are still unclosed at cursor position, or empty array if balanced.
+/** Returns all opened brackets in the given token stream.
  *
  * @param tokens token stream to search for missing brackets
- * @param cursorOffset offset inside `tokens` (will stop search here)
  * @param lineOffset number of lines that come before `tokens`
  */
-export function getMissingBrackets(
+export function getBrackets(
     tokens: Prism.TokenStream,
-    cursorOffset: number,
     lineOffset: number
-): ClosingBracket[] {
+): Bracket[] {
     if (isSingleToken(tokens)) {
         console.error(`Unexpected tokens type: ${typeof tokens}`);
         if (typeof tokens !== 'string') {
-            return getMissingBrackets(tokens.content, cursorOffset, lineOffset);
+            return getBrackets(tokens.content, lineOffset);
         }
         return [];
     }
 
     // this assumes that all relevant tokens are on the top-level of `tokens`.
     // (should be the case if using getContextAtCursor())
-    const expectedBrackets: ClosingBracket[] = [];
+    const brackets: Bracket[] = [];
     let currentOffset = 0;
     let lineNo = lineOffset;
     for (const token of tokens) {
         lineNo += getLineCount(token);
-        matchBracketsInToken(token, expectedBrackets, lineNo);
-
+        matchBracketsInToken(token, brackets, currentOffset, lineNo);
         currentOffset += token.length;
-        //no need to check beyond cursor
-        if (currentOffset >= cursorOffset) {
-            break;
-        }
     }
-    return expectedBrackets;
+    return brackets;
 }
 
 /** If token is a bracket, adds to brackets if opening, or removes matching last bracket if closing. */
 function matchBracketsInToken(
     token: string | Prism.Token,
-    brackets: ClosingBracket[],
+    brackets: Bracket[],
+    tokenOffset: number,
     lineNo: number
 ) {
     const bracket = getBracketString(token);
     switch (bracket) {
         case '(':
-            brackets.push({ bracket: ')', openedAtLine: lineNo });
+            brackets.push({
+                bracket: ')',
+                openedAt: tokenOffset,
+                openedAtLine: lineNo,
+            });
             break;
         case '[':
-            brackets.push({ bracket: ']', openedAtLine: lineNo });
+            brackets.push({
+                bracket: ']',
+                openedAt: tokenOffset,
+                openedAtLine: lineNo,
+            });
             break;
         case '{':
-            brackets.push({ bracket: '}', openedAtLine: lineNo });
+            brackets.push({
+                bracket: '}',
+                openedAt: tokenOffset,
+                openedAtLine: lineNo,
+            });
             break;
         case ')':
         case ']':
         case '}': {
-            const lastBracket = brackets[brackets.length - 1]?.bracket;
-            if (bracket === lastBracket) {
-                brackets.pop();
-            } else {
+            //find last opened bracket of the same type
+            const lastOpened = brackets
+                .slice()
+                .reverse()
+                .find((b) => b.closedAt === undefined);
+            if (bracket !== lastOpened?.bracket) {
                 throw new Error(
-                    `Encountered unexpected bracket "${bracket}", but expected ${lastBracket}`
+                    `Encountered unexpected bracket "${bracket}", but expected ${lastOpened?.bracket}`
                 );
             }
+            lastOpened.closedAt = tokenOffset;
         }
     }
 }
