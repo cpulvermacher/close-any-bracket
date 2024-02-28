@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.3.1] (pre-release)
+
+- Revert: Avoid closing brackets that are already closed after the cursor
+
 ## [0.3.0] (pre-release)
 
 - Avoid closing brackets that are already closed after the cursor
