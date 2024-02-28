@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.3.0] (pre-release)
+
+- Avoid closing brackets that are already closed after the cursor
+
 ## [0.2.4]
 
 - Shouldn't close anything if inside a comment
