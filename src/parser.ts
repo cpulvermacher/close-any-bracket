@@ -17,7 +17,7 @@ export type ParseOptions = {
 };
 
 export const defaultParseOptions: ParseOptions = {
-    onlySearchClosingBracketsUntilCursor: false,
+    onlySearchClosingBracketsUntilCursor: true,
 };
 
 /**

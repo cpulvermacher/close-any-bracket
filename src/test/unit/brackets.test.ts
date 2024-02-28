@@ -31,13 +31,15 @@ describe('closeBracket', () => {
     });
 
     it('ignores brackets closed after cursor', () => {
-        expect(closeBracket('([{}])', 0, 'javascript')).toBe(null);
-        expect(closeBracket('([{}])', 1, 'javascript')).toBe(null);
-        expect(closeBracket('([{}])', 2, 'javascript')).toBe(null);
-        expect(closeBracket('([{}])', 3, 'javascript')).toBe(null);
-        expect(closeBracket('([{}])', 4, 'javascript')).toBe(null);
-        expect(closeBracket('([{}])', 5, 'javascript')).toBe(null);
-        expect(closeBracket('([{}])', 6, 'javascript')).toBe(null);
+        const options = { onlySearchClosingBracketsUntilCursor: false };
+
+        expect(closeBracket('([{}])', 0, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 1, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 2, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 3, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 4, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 5, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
     });
 
     it('optionally, only takes closed brackets up to cursor into account', () => {
