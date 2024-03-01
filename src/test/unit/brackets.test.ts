@@ -31,7 +31,7 @@ describe('closeBracket', () => {
     });
 
     it('ignores brackets closed after cursor', () => {
-        const options = { onlySearchClosingBracketsUntilCursor: false };
+        const options = { ignoreAlreadyClosed: true };
 
         expect(closeBracket('([{}])', 0, 'javascript', options)).toBe(null);
         expect(closeBracket('([{}])', 1, 'javascript', options)).toBe(null);
@@ -42,8 +42,8 @@ describe('closeBracket', () => {
         expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
     });
 
-    it('optionally, only takes closed brackets up to cursor into account', () => {
-        const options = { onlySearchClosingBracketsUntilCursor: true };
+    it('only takes closed brackets up to cursor into account', () => {
+        const options = { ignoreAlreadyClosed: false };
 
         expect(closeBracket('([{}])', 0, 'javascript', options)).toBe(null);
         expect(closeBracket('([{}])', 1, 'javascript', options)).toBe(')');
@@ -55,7 +55,7 @@ describe('closeBracket', () => {
     });
 
     it('handles mismatched brackets', () => {
-        const options = { onlySearchClosingBracketsUntilCursor: false };
+        const options = { ignoreAlreadyClosed: true };
 
         //cursor before mismatched bracket
         expect(closeBracket('({ ({} })', 6, 'javascript', options)).toBe(')');
@@ -193,7 +193,7 @@ describe('closeToIndentAtLine', () => {
                     language,
                     i,
                     getLine,
-                    { onlySearchClosingBracketsUntilCursor: untilCursor }
+                    { ignoreAlreadyClosed: !untilCursor }
                 );
 
                 expect(result, `failure in last line of: ${code}`).toBe(

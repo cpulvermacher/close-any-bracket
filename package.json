@@ -50,7 +50,17 @@
         "mac": "ctrl+shift+enter",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Close Any Bracket",
+      "properties": {
+        "closeAnyBracket.ignoreAlreadyClosed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable to avoid closing brackets that are already closed after the cursor. (EXPERIMENTAL)"
+        }
+      }
+    }
   },
   "scripts": {
     "copy-languages": "for f in node_modules/prismjs/components/prism-*.min.js; do cp \"$f\" \"out/$(basename \"${f%.min.*}\").js\"; done",

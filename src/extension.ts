@@ -22,7 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
             const insertString = closeBracket(
                 editor.document.getText(),
                 cursorOffset,
-                editor.document.languageId
+                editor.document.languageId,
+                getParserOptions()
             );
 
             if (insertString) {
@@ -49,7 +50,8 @@ export function activate(context: vscode.ExtensionContext) {
                 cursorOffset,
                 editor.document.languageId,
                 cursorPosition.line,
-                (line) => getLine(editor.document, line)
+                (line) => getLine(editor.document, line),
+                getParserOptions()
             );
 
             if (missingBrackets) {
@@ -62,6 +64,14 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     context.subscriptions.push(close, closeToIndent);
+}
+
+function getParserOptions() {
+    const config = vscode.workspace.getConfiguration();
+    const ignoreAlreadyClosed = config.get<boolean>(
+        'closeAnyBracket.ignoreAlreadyClosed'
+    );
+    return { ignoreAlreadyClosed };
 }
 
 function getLine(document: vscode.TextDocument, line: number) {

@@ -13,11 +13,11 @@ export type Bracket = {
 };
 
 export type ParseOptions = {
-    onlySearchClosingBracketsUntilCursor?: boolean;
+    ignoreAlreadyClosed?: boolean;
 };
 
 export const defaultParseOptions: ParseOptions = {
-    onlySearchClosingBracketsUntilCursor: true,
+    ignoreAlreadyClosed: false,
 };
 
 /**
@@ -60,7 +60,7 @@ export function parse(
         }
 
         if (
-            !!options.onlySearchClosingBracketsUntilCursor &&
+            !options.ignoreAlreadyClosed &&
             bracket.closedAt &&
             bracket.closedAt >= cursorOffset - context.offset
         ) {
