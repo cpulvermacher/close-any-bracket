@@ -54,9 +54,20 @@ describe('closeBracket', () => {
         expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
     });
 
-    it('may not close mismatched open brackets', () => {
-        expect(() => closeBracket('[(]', 3, 'javascript')).toThrow();
-        expect(() => closeBracket('[)]', 3, 'javascript')).toThrow();
+    it('handles mismatched brackets', () => {
+        const options = { onlySearchClosingBracketsUntilCursor: false };
+
+        //cursor before mismatched bracket
+        expect(closeBracket('({ ({} })', 6, 'javascript', options)).toBe(')');
+        expect(closeBracket('({ ({} })', 7, 'javascript', options)).toBe(')');
+
+        //cursor after mismatched bracket
+        expect(() =>
+            closeBracket('({ ({} })', 8, 'javascript', options)
+        ).toThrow();
+        expect(() =>
+            closeBracket('({ ({} })', 9, 'javascript', options)
+        ).toThrow();
     });
 
     // strings

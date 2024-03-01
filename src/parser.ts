@@ -47,7 +47,11 @@ export function parse(
         return null;
     }
 
-    const brackets = getBrackets(context.tokens, context.lineOffset);
+    const brackets = getBrackets(
+        context.tokens,
+        context.lineOffset,
+        cursorOffset
+    );
 
     //get all brackets opened before cursor, but unclosed (before or after cursor)
     const isUnclosed = (bracket: Bracket) => {
@@ -190,12 +194,13 @@ export function getContextAtCursor(
  */
 export function getBrackets(
     tokens: Prism.TokenStream,
-    lineOffset: number
+    lineOffset: number,
+    cursorPosition: number
 ): Bracket[] {
     if (isSingleToken(tokens)) {
         console.error(`Unexpected tokens type: ${typeof tokens}`);
         if (typeof tokens !== 'string') {
-            return getBrackets(tokens.content, lineOffset);
+            return getBrackets(tokens.content, lineOffset, cursorPosition);
         }
         return [];
     }
@@ -207,7 +212,19 @@ export function getBrackets(
     let lineNo = lineOffset;
     for (const token of tokens) {
         lineNo += getLineCount(token);
-        matchBracketsInToken(token, brackets, currentOffset, lineNo);
+        try {
+            matchBracketsInToken(token, brackets, currentOffset, lineNo);
+        } catch (e) {
+            // found a mismatched bracket, stop.
+            if (cursorPosition <= currentOffset) {
+                // this is a fairly normal thing if it happens after the cursor
+                break;
+            } else {
+                console.log('before cursor:', cursorPosition, currentOffset);
+                // but before the cursor, it will probably mess up any thing we do
+                throw e;
+            }
+        }
         currentOffset += token.length;
     }
     return brackets;
@@ -253,7 +270,7 @@ function matchBracketsInToken(
                 .find((b) => b.closedAt === undefined);
             if (bracket !== lastOpened?.bracket) {
                 throw new Error(
-                    `Encountered unexpected bracket "${bracket}", but expected ${lastOpened?.bracket}`
+                    `Encountered unexpected bracket "${bracket}" in line ${lineNo}, but expected ${lastOpened?.bracket}`
                 );
             }
             lastOpened.closedAt = tokenOffset;
