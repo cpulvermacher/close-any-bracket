@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.3.2] (pre-release)
+
+- Fix handling of mismatched brackets
+- Add experimental configuration option ignoreAlreadyClosed
+
 ## [0.3.1] (pre-release)
 
 - Revert: Avoid closing brackets that are already closed after the cursor
