@@ -270,7 +270,7 @@ function matchBracketsInToken(
                 .find((b) => b.closedAt === undefined);
             if (bracket !== lastOpened?.bracket) {
                 throw new Error(
-                    `Encountered unexpected bracket "${bracket}" in line ${lineNo}, but expected ${lastOpened?.bracket}`
+                    `Encountered unexpected bracket ${bracket} in line ${lineNo}, but expected ${lastOpened?.bracket}`
                 );
             }
             lastOpened.closedAt = tokenOffset;
