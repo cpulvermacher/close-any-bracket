@@ -12,3 +12,4 @@ src/
 images/
 !images/icon.png
 node_modules
+tmp/

@@ -32,7 +32,7 @@ export function parse(
     text: string,
     cursorOffset: number,
     languageId: string,
-    options: ParseOptions = defaultParseOptions
+    options: ParseOptions
 ): Bracket[] | null {
     const grammar = getGrammar(languageId);
     if (!grammar) {
