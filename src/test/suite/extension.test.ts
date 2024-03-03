@@ -4,7 +4,15 @@ import * as vscode from 'vscode';
 const exampleJsFile = `
 if (abc) {
     abc.def({
+// <-- cursor here
+    });
+};
 `;
+
+function withAddedTextAtCursor(text: string, addedText: string) {
+    const cursor = text.indexOf('// <-- cursor here');
+    return text.slice(0, cursor) + addedText + text.slice(cursor);
+}
 
 suite('Extension ', () => {
     test('Closes single bracket in current doc', async () => {
@@ -17,7 +25,7 @@ suite('Extension ', () => {
         await vscode.commands.executeCommand('close-any-bracket.close');
 
         const text = await waitForNewText;
-        assert.strictEqual(text, exampleJsFile + '}');
+        assert.strictEqual(text, withAddedTextAtCursor(exampleJsFile, '}'));
     });
 
     test('Closes to indent in current doc', async () => {
@@ -32,7 +40,7 @@ suite('Extension ', () => {
         );
 
         const text = await waitForNewText;
-        assert.strictEqual(text, exampleJsFile + '})}\n');
+        assert.strictEqual(text, withAddedTextAtCursor(exampleJsFile, '})}\n'));
     });
 
     async function openEditor(
