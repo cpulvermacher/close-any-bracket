@@ -1,9 +1,13 @@
+Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
+
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index';
-Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
 
 import { formatToken } from './debug';
 import { getLineCount, isSingleToken } from './token';
+
+//import all languages to bundle them (needed for the web version of VScode)
+import './language_bundle';
 
 export type Context = {
     tokens: Prism.TokenStream;
