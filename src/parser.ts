@@ -3,37 +3,19 @@ import loadLanguages from 'prismjs/components/index';
 Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
 
 import { formatToken } from './debug';
-import { getBracketString, getLineCount, isSingleToken } from './token';
+import { getLineCount, isSingleToken } from './token';
 
-export type Bracket = {
-    bracket: ')' | ']' | '}';
-    openedAt: number; //cursor offset
-    openedAtLine: number;
-    closedAt?: number; //cursor offset, if closed
+export type Context = {
+    tokens: Prism.TokenStream | null;
+    offset: number; // offset of the context from the beginning of the input tokens
+    lineOffset: number; // number of lines skipped before the start of the context
 };
 
-export type ParseOptions = {
-    ignoreAlreadyClosed?: boolean;
-};
-
-export const defaultParseOptions: ParseOptions = {
-    ignoreAlreadyClosed: false,
-};
-
-/**
- * Parses the given text to find missing closing brackets at the specified cursor offset.
- *
- * @param text text to parse
- * @param cursorOffset offset of the cursor within the text
- * @param languageId VSCode language identifier for text
- * @returns array of missing closing brackets, or null if none found
- */
-export function parse(
+export function getContext(
     text: string,
     cursorOffset: number,
-    languageId: string,
-    options: ParseOptions
-): Bracket[] | null {
+    languageId: string
+): Context | null {
     const grammar = getGrammar(languageId);
     if (!grammar) {
         console.log(`Couldn't find grammar for language ${languageId}`);
@@ -46,33 +28,7 @@ export function parse(
     if (context.tokens === null) {
         return null;
     }
-
-    const brackets = getBrackets(
-        context.tokens,
-        context.lineOffset,
-        cursorOffset
-    );
-
-    //get all brackets opened before cursor, but unclosed (before or after cursor)
-    const isUnclosed = (bracket: Bracket) => {
-        if (bracket.openedAt >= cursorOffset - context.offset) {
-            return false;
-        }
-
-        if (
-            !options.ignoreAlreadyClosed &&
-            bracket.closedAt &&
-            bracket.closedAt >= cursorOffset - context.offset
-        ) {
-            return true;
-        }
-
-        return bracket.closedAt === undefined;
-    };
-
-    const missing = brackets.filter(isUnclosed);
-
-    return missing.length > 0 ? missing : null;
+    return context;
 }
 
 /**
@@ -109,13 +65,6 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
 
     return Prism.languages[grammarId] || null;
 }
-
-export type Context = {
-    tokens: Prism.TokenStream | null;
-    offset: number; // offset of the context from the beginning of the input tokens
-    lineOffset: number; // number of lines skipped before the start of the context
-};
-
 /** Returns the token or list of tokens that is relevant for the current cursor position.
  *
  * Might return a single token if we are a inside string/comment, or the entire file if
@@ -185,95 +134,4 @@ export function getContextAtCursor(
 
     console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
     return { tokens: null, offset: 0, lineOffset: 0 };
-}
-
-/** Returns all opened brackets in the given token stream.
- *
- * @param tokens token stream to search for missing brackets
- * @param lineOffset number of lines that come before `tokens`
- */
-export function getBrackets(
-    tokens: Prism.TokenStream,
-    lineOffset: number,
-    cursorPosition: number
-): Bracket[] {
-    if (isSingleToken(tokens)) {
-        console.error(`Unexpected tokens type: ${typeof tokens}`);
-        if (typeof tokens !== 'string') {
-            return getBrackets(tokens.content, lineOffset, cursorPosition);
-        }
-        return [];
-    }
-
-    // this assumes that all relevant tokens are on the top-level of `tokens`.
-    // (should be the case if using getContextAtCursor())
-    const brackets: Bracket[] = [];
-    let currentOffset = 0;
-    let lineNo = lineOffset;
-    for (const token of tokens) {
-        lineNo += getLineCount(token);
-        try {
-            matchBracketsInToken(token, brackets, currentOffset, lineNo);
-        } catch (e) {
-            // found a mismatched bracket, stop.
-            if (cursorPosition <= currentOffset) {
-                // this is a fairly normal thing if it happens after the cursor
-                break;
-            } else {
-                console.log('before cursor:', cursorPosition, currentOffset);
-                // but before the cursor, it will probably mess up any thing we do
-                throw e;
-            }
-        }
-        currentOffset += token.length;
-    }
-    return brackets;
-}
-
-/** If token is a bracket, adds to brackets if opening, or removes matching last bracket if closing. */
-function matchBracketsInToken(
-    token: string | Prism.Token,
-    brackets: Bracket[],
-    tokenOffset: number,
-    lineNo: number
-) {
-    const bracket = getBracketString(token);
-    switch (bracket) {
-        case '(':
-            brackets.push({
-                bracket: ')',
-                openedAt: tokenOffset,
-                openedAtLine: lineNo,
-            });
-            break;
-        case '[':
-            brackets.push({
-                bracket: ']',
-                openedAt: tokenOffset,
-                openedAtLine: lineNo,
-            });
-            break;
-        case '{':
-            brackets.push({
-                bracket: '}',
-                openedAt: tokenOffset,
-                openedAtLine: lineNo,
-            });
-            break;
-        case ')':
-        case ']':
-        case '}': {
-            //find last opened bracket of the same type
-            const lastOpened = brackets
-                .slice()
-                .reverse()
-                .find((b) => b.closedAt === undefined);
-            if (bracket !== lastOpened?.bracket) {
-                throw new Error(
-                    `Encountered unexpected bracket ${bracket} in line ${lineNo}, but expected ${lastOpened?.bracket}`
-                );
-            }
-            lastOpened.closedAt = tokenOffset;
-        }
-    }
 }
