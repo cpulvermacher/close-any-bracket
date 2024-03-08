@@ -128,7 +128,7 @@ export function parse(
     }
 
     const brackets = getBracketsForContext(
-        context.tokens!,
+        context.tokens,
         context.lineOffset,
         cursorOffset
     );

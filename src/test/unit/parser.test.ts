@@ -22,8 +22,8 @@ describe('getGrammar', () => {
 
 describe('getContextAtCursor', () => {
     function expectContext(
-        result: Context,
-        expectedTokens: Prism.TokenStream | null,
+        result: Context | null,
+        expectedTokens: Prism.TokenStream,
         expectedOffset?: number,
         expectedLineOffset?: number
     ) {
@@ -36,7 +36,7 @@ describe('getContextAtCursor', () => {
 
     it('returns null for offset 0', () => {
         const result = getContextAtCursor(['token1', 'token2'], 0);
-        expectContext(result, null);
+        expect(result).toBe(null);
     });
 
     it('returns token at cursor for single token', () => {
@@ -51,12 +51,12 @@ describe('getContextAtCursor', () => {
 
     it('returns null if beyond single token', () => {
         const result = getContextAtCursor('token', 30);
-        expectContext(result, null);
+        expect(result).toBe(null);
     });
 
     it('returns null if beyond tokens', () => {
         const result = getContextAtCursor(['short', 'tokens'], 30); // beyond tokens.length
-        expectContext(result, null);
+        expect(result).toBe(null);
     });
 
     it('returns tokens if inside tokens', () => {
@@ -79,7 +79,7 @@ describe('getContextAtCursor', () => {
         const tokens = ['abc', backtick, nested, 'x'];
 
         // entire string: abc`nest1__n2x
-        expectContext(getContextAtCursor(tokens, 0), null);
+        expect(getContextAtCursor(tokens, 0)).toBe(null);
         expectContext(getContextAtCursor(tokens, 1), tokens);
         expectContext(getContextAtCursor(tokens, 2), tokens);
         expectContext(getContextAtCursor(tokens, 3), tokens);
@@ -94,7 +94,7 @@ describe('getContextAtCursor', () => {
         expectContext(getContextAtCursor(tokens, 12), nested.content, 4, 0);
         expectContext(getContextAtCursor(tokens, 13), nested.content, 4, 0);
         expectContext(getContextAtCursor(tokens, 14), tokens);
-        expectContext(getContextAtCursor(tokens, 15), null);
+        expect(getContextAtCursor(tokens, 15)).toBe(null);
     });
 
     it('returns token with content that includes the cursor', () => {
@@ -110,18 +110,18 @@ describe('getContextAtCursor', () => {
         const someString = makeToken('string', '"( "');
         const tokens = [bracket, someString];
 
-        expectContext(getContextAtCursor(tokens, 0), null);
+        expect(getContextAtCursor(tokens, 0)).toBe(null);
         expectContext(getContextAtCursor(tokens, 1), tokens);
         expectContext(getContextAtCursor(tokens, 2), someString, 1, 0); // cursor after opening "
         expectContext(getContextAtCursor(tokens, 3), someString, 1, 0); // cursor after opening "
         expectContext(getContextAtCursor(tokens, 4), someString, 1, 0); // cursor after opening "
         expectContext(getContextAtCursor(tokens, 5), tokens);
-        expectContext(getContextAtCursor(tokens, 6), null);
+        expect(getContextAtCursor(tokens, 6)).toBe(null);
     });
 
     it('returns null for empty token stream', () => {
-        expectContext(getContextAtCursor([], 0), null);
-        expectContext(getContextAtCursor([], 1), null);
+        expect(getContextAtCursor([], 0)).toBe(null);
+        expect(getContextAtCursor([], 1)).toBe(null);
     });
 });
 

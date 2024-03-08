@@ -6,7 +6,7 @@ import { formatToken } from './debug';
 import { getLineCount, isSingleToken } from './token';
 
 export type Context = {
-    tokens: Prism.TokenStream | null;
+    tokens: Prism.TokenStream;
     offset: number; // offset of the context from the beginning of the input tokens
     lineOffset: number; // number of lines skipped before the start of the context
 };
@@ -24,11 +24,7 @@ export function getContext(
 
     const allTokens = Prism.tokenize(text, grammar);
 
-    const context = getContextAtCursor(allTokens, cursorOffset);
-    if (context.tokens === null) {
-        return null;
-    }
-    return context;
+    return getContextAtCursor(allTokens, cursorOffset);
 }
 
 /**
@@ -76,17 +72,17 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
 export function getContextAtCursor(
     tokens: Prism.TokenStream,
     cursorOffset: number
-): Context {
+): Context | null {
     if (cursorOffset <= 0) {
-        return { tokens: null, offset: 0, lineOffset: 0 };
+        return null;
     }
 
     if (isSingleToken(tokens)) {
-        return {
-            tokens: cursorOffset <= tokens.length ? tokens : null,
-            offset: 0,
-            lineOffset: 0,
-        };
+        if (cursorOffset > tokens.length) {
+            return null;
+        }
+
+        return { tokens, offset: 0, lineOffset: 0 };
     }
 
     let currentOffset = 0;
@@ -124,6 +120,9 @@ export function getContextAtCursor(
                 token.content,
                 cursorOffset - currentOffset
             );
+            if (context === null) {
+                return null;
+            }
             return {
                 tokens: context.tokens,
                 offset: context.offset + currentOffset,
@@ -133,5 +132,5 @@ export function getContextAtCursor(
     }
 
     console.error("Couldn't find cursorOffset in tokens", tokens, cursorOffset);
-    return { tokens: null, offset: 0, lineOffset: 0 };
+    return null;
 }
