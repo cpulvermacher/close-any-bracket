@@ -7,6 +7,13 @@ import {
 } from '../../brackets';
 import { closeToIndentExamples } from './close_to_indent_examples';
 
+const javascriptWithUnclosedBracketsInMiddle = `
+describe('a', () => {
+    it('b', () => {
+    // here
+});
+`;
+
 describe('closeBracket', () => {
     it('closes open brackets', () => {
         expect(closeBracket('(', 1, 'javascript')).toBe(')');
@@ -68,6 +75,18 @@ describe('closeBracket', () => {
         expect(() =>
             closeBracket('({ ({} })', 9, 'javascript', options)
         ).toThrow();
+    });
+
+    it('closes brackets missing brackets in the middle', () => {
+        const options = { ignoreAlreadyClosed: true };
+
+        const missingBracket = closeBracket(
+            javascriptWithUnclosedBracketsInMiddle,
+            javascriptWithUnclosedBracketsInMiddle.indexOf('// here'),
+            'javascript',
+            options
+        );
+        expect(missingBracket).toBe('}');
     });
 
     // strings
@@ -224,6 +243,28 @@ describe('closeToIndentAtLine', () => {
                 );
             }
         });
+    });
+
+    it('closes missing brackets in the middle', () => {
+        const options = { ignoreAlreadyClosed: true };
+        const cursorOffset =
+            javascriptWithUnclosedBracketsInMiddle.indexOf('// here');
+        const lines = javascriptWithUnclosedBracketsInMiddle.split('\n');
+        const lineNoAtCursor =
+            javascriptWithUnclosedBracketsInMiddle
+                .substring(0, cursorOffset)
+                .split('\n').length - 1;
+        const getLine = (line: number) => lines[line];
+
+        const missingBrackets = closeToIndentAtLine(
+            javascriptWithUnclosedBracketsInMiddle,
+            cursorOffset,
+            'javascript',
+            lineNoAtCursor,
+            getLine,
+            options
+        );
+        expect(missingBrackets).toBe('})');
     });
 });
 
