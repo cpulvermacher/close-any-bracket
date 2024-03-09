@@ -8,6 +8,7 @@ export type Bracket = {
     openedAt: number; //cursor offset
     openedAtLine: number;
     closedAt?: number; //cursor offset, if closed
+    closedAtLine?: number;
 };
 
 export type ParseOptions = {
@@ -21,7 +22,12 @@ export function closeBracket(
     languageId: string,
     parseOptions: ParseOptions
 ): string | null {
-    const missing = parse(text, cursorOffset, languageId, parseOptions);
+    const missing = getMissingBrackets(
+        text,
+        cursorOffset,
+        languageId,
+        parseOptions
+    );
     if (!missing) {
         return null;
     }
@@ -52,7 +58,12 @@ export function closeToIndentAtLine(
     parseOptions: ParseOptions
 ): string {
     let bracketsToClose = '';
-    const missing = parse(text, cursorOffset, languageId, parseOptions);
+    const missing = getMissingBrackets(
+        text,
+        cursorOffset,
+        languageId,
+        parseOptions
+    );
     if (!missing) {
         return bracketsToClose;
     }
@@ -112,7 +123,7 @@ export function getIndentationLevelAtLine(
  * @param languageId VSCode language identifier for text
  * @returns array of missing closing brackets, or null if none found
  */
-export function parse(
+export function getMissingBrackets(
     text: string,
     cursorOffset: number,
     languageId: string,
@@ -242,6 +253,7 @@ function matchBracketsInToken(
                 );
             }
             lastOpened.closedAt = tokenOffset;
+            lastOpened.closedAtLine = lineNo;
         }
     }
 }
