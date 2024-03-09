@@ -14,16 +14,12 @@ export type ParseOptions = {
     ignoreAlreadyClosed?: boolean;
 };
 
-export const defaultParseOptions: ParseOptions = {
-    ignoreAlreadyClosed: false,
-};
-
 /** get single bracket that should be closed at cursor position */
 export function closeBracket(
     text: string,
     cursorOffset: number,
     languageId: string,
-    parseOptions: ParseOptions = defaultParseOptions
+    parseOptions: ParseOptions
 ): string | null {
     const missing = parse(text, cursorOffset, languageId, parseOptions);
     if (!missing) {
@@ -53,7 +49,7 @@ export function closeToIndentAtLine(
     languageId: string,
     lineNo: number,
     getLine: (line: number) => string,
-    parseOptions: ParseOptions = defaultParseOptions
+    parseOptions: ParseOptions
 ): string {
     let bracketsToClose = '';
     const missing = parse(text, cursorOffset, languageId, parseOptions);
