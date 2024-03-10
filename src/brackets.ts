@@ -175,19 +175,8 @@ function matchBrackets(
         } else {
             //closing bracket
             const lastOpened = unclosedBrackets[unclosedBrackets.length - 1];
-            if (
-                !lastOpened ||
-                bracket.bracket !== toClosingBracket(lastOpened)
-            ) {
-                if (cursorOffset <= bracket.offset) {
-                    // this is a fairly normal thing if it happens after the cursor
-                    break; //TODO maybe need to continue depending on options
-                } else {
-                    // but before the cursor, it will probably mess up any thing we do
-                    throw new Error(
-                        `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened.bracket}`
-                    );
-                }
+            if (shouldStopMatching(lastOpened, bracket, cursorOffset)) {
+                break;
             }
 
             // remove last opened bracket
@@ -246,5 +235,25 @@ function toClosingBracket(bracket: BracketInfo): ClosingBracket {
             return '}';
         default:
             throw new Error(`Unexpected bracket: ${bracket.bracket}`);
+    }
+}
+function shouldStopMatching(
+    lastOpened: BracketInfo,
+    bracket: BracketInfo,
+    cursorOffset: number
+): boolean {
+    if (lastOpened && bracket.bracket === toClosingBracket(lastOpened)) {
+        // this is the expected closing bracket
+        return false;
+    }
+
+    if (cursorOffset <= bracket.offset) {
+        // this is a fairly normal thing if it happens after the cursor
+        return true; //TODO maybe need to continue depending on options
+    } else {
+        // but before the cursor, it will probably mess up any thing we do
+        throw new Error(
+            `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened.bracket}`
+        );
     }
 }
