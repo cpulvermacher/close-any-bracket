@@ -4,12 +4,14 @@ const BRACKET_CHARACTERS = new Set(['(', ')', '{', '}', '[', ']']);
 
 export type Token = string | Prism.Token;
 
+export type BracketCharacter = '(' | '[' | '{' | ')' | ']' | '}';
+
 export function isSingleToken(token: Prism.TokenStream): token is Token {
     return typeof token === 'string' || 'content' in token;
 }
 
 /** returns either a opening/closing bracket character if the token represents one, or null. */
-export function getBracketString(token: Token): string | null {
+export function getBracketString(token: Token): BracketCharacter | null {
     if (typeof token === 'string' || token.type !== 'punctuation') {
         return null;
     }
@@ -22,7 +24,7 @@ export function getBracketString(token: Token): string | null {
     }
 
     if (BRACKET_CHARACTERS.has(token.content)) {
-        return token.content;
+        return token.content as BracketCharacter;
     } else {
         return null;
     }
