@@ -18,6 +18,7 @@ export type ClosingBracket = ')' | ']' | '}';
 
 export type ParseOptions = {
     ignoreAlreadyClosed?: boolean;
+    closeToIndent?: boolean;
 };
 
 /** get single bracket that should be closed at cursor position */
@@ -27,6 +28,12 @@ export function closeBracket(
     languageId: string,
     parseOptions: ParseOptions
 ): ClosingBracket | null {
+    if (parseOptions.closeToIndent) {
+        throw new Error(
+            'closeBracket() does not support closeToIndent option. Use closeToIndentAtLine() instead.'
+        );
+    }
+
     const missing = getMissingBrackets(
         text,
         cursorOffset,
@@ -247,13 +254,14 @@ function shouldStopMatching(
         return false;
     }
 
+    // some kind of mismatch...
     if (cursorOffset <= bracket.offset) {
-        // this is a fairly normal thing if it happens after the cursor
+        // ...this is a fairly normal thing if it happens after the cursor
         return true; //TODO maybe need to continue depending on options
     } else {
-        // but before the cursor, it will probably mess up any thing we do
+        // ...but before the cursor, it will probably mess up anything we do
         throw new Error(
-            `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened.bracket}`
+            `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened?.bracket}`
         );
     }
 }
