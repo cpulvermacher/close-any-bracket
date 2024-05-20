@@ -69,30 +69,40 @@ export function closeToIndentAtLine(
     getLine: (line: number) => string,
     parseOptions: ParseOptions
 ): string {
+    // get line range for block at lineNo with same or higher indentation
+    const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
+    const filterBrackets = (brackets: BracketInfo[]) => {
+        let targetBrackets: BracketInfo[] = [];
+        for (const bracket of brackets) {
+            const indent = getIndentationLevelAtLine(bracket.lineNo, getLine);
+            if (indent >= targetIndent) {
+                targetBrackets.push(bracket);
+            } else if (bracket.lineNo < lineNo) {
+                //block ended before target line, discard
+                targetBrackets = [];
+            } else {
+                //block ended after target line, we're done
+                break;
+            }
+        }
+        return targetBrackets;
+    };
+
     let bracketsToClose = '';
     const missing = getMissingBrackets(
         text,
         cursorOffset,
         languageId,
-        parseOptions
+        parseOptions,
+        filterBrackets
     );
     if (!missing) {
         return bracketsToClose;
     }
 
-    const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
     console.debug('Target indent:', targetIndent, 'missing brackets:', missing);
-    // iterate in reverse order until we find a bracket that was opened at less than targetIndent
     for (let i = missing.length - 1; i >= 0; i--) {
-        const bracket = missing[i];
-        const indentForOpeningBracket = getIndentationLevelAtLine(
-            bracket.lineNo,
-            getLine
-        );
-        if (indentForOpeningBracket < targetIndent) {
-            break;
-        }
-        bracketsToClose += toClosingBracket(bracket);
+        bracketsToClose += toClosingBracket(missing[i]);
     }
 
     return bracketsToClose;
@@ -133,23 +143,32 @@ export function getIndentationLevelAtLine(
  * @param text text to parse
  * @param cursorOffset offset of the cursor within the text
  * @param languageId VSCode language identifier for text
+ * @param options options for parsing
+ * @param bracketFilter optional filter for brackets to consider
  * @returns array of missing closing brackets, or null if none found
  */
 export function getMissingBrackets(
     text: string,
     cursorOffset: number,
     languageId: string,
-    options: ParseOptions
+    options: ParseOptions,
+    bracketFilter?: (brackets: BracketInfo[]) => BracketInfo[]
 ): BracketInfo[] | null {
     const context = getContext(text, cursorOffset, languageId);
     if (context === null) {
         return null;
     }
 
-    const brackets = getBracketsForContext(context.tokens, context.lineOffset);
+    const allBrackets = getBracketsForContext(
+        context.tokens,
+        context.lineOffset
+    );
+    const filteredBrackets = bracketFilter
+        ? bracketFilter(allBrackets)
+        : allBrackets;
 
     const missingBrackets = matchBrackets(
-        brackets,
+        filteredBrackets,
         cursorOffset - context.offset,
         options
     );
@@ -188,7 +207,6 @@ function matchBrackets(
 
             // remove last opened bracket
             unclosedBrackets.pop();
-            //TODO during matching, if closeToIndent + ignoreAlreadyClosed, we need to take indent of brackets into account
         }
     }
 
@@ -257,7 +275,7 @@ function shouldStopMatching(
     // some kind of mismatch...
     if (cursorOffset <= bracket.offset) {
         // ...this is a fairly normal thing if it happens after the cursor
-        return true; //TODO maybe need to continue depending on options
+        return true;
     } else {
         // ...but before the cursor, it will probably mess up anything we do
         throw new Error(
