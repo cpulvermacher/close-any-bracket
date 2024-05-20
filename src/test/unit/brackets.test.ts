@@ -82,7 +82,7 @@ describe('closeBracket', () => {
         ).toThrow();
     });
 
-    it('closes brackets missing brackets in the middle', () => {
+    it('closes missing brackets in the middle', () => {
         const missingBracket = closeBracket(
             javascriptWithUnclosedBracketsInMiddle,
             javascriptWithUnclosedBracketsInMiddle.indexOf('// here'),
