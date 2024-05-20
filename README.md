@@ -1,6 +1,7 @@
 # Close Any Bracket
 
 [![Latest Release](https://flat.badgen.net/github/tag/cpulvermacher/close-any-bracket)](https://github.com/cpulvermacher/close-any-bracket/tags)
+![Installs](https://vsmarketplacebadges.dev/installs-short/cpulvermacher.close-any-bracket.svg)
 [![Status](https://flat.badgen.net/github/checks/cpulvermacher/close-any-bracket)](https://github.com/cpulvermacher/close-any-bracket/actions/workflows/node.js.yml)
 [![License](https://flat.badgen.net/github/license/cpulvermacher/close-any-bracket)](./LICENSE)
 
@@ -8,6 +9,9 @@
 A Visual Studio Code extension to automatically close open braces, brackets, or parentheses in the right order.
 
 ![Demo](./images/demo.gif)
+
+You may find this particularly useful with callback-heavy languages or frameworks (e.g. jest, vitest) or in conjunction with Copilot tools that are inconsistent in the amount of context they close at the end of a completion.
+
 
 ## Features
 
