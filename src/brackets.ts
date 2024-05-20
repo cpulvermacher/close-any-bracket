@@ -72,6 +72,10 @@ export function closeToIndentAtLine(
     // get line range for block at lineNo with same or higher indentation
     const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
     const filterBrackets = (brackets: BracketInfo[]) => {
+        if (targetIndent === 0) {
+            return brackets;
+        }
+
         let targetBrackets: BracketInfo[] = [];
         for (const bracket of brackets) {
             const indent = getIndentationLevelAtLine(bracket.lineNo, getLine);
