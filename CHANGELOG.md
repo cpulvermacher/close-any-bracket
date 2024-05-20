@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.3.4] (pre-release)
+
+- Fix closing brackets in the middle of text with "Close to indent" + ignoreAlreadyClosed
+
 ## [0.3.2] (pre-release)
 
 - Fix handling of mismatched brackets
