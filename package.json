@@ -56,8 +56,8 @@
       "properties": {
         "closeAnyBracket.ignoreAlreadyClosed": {
           "type": "boolean",
-          "default": false,
-          "description": "Enable to avoid closing brackets that are already closed after the cursor. (EXPERIMENTAL)"
+          "default": true,
+          "description": "Enable to avoid closing brackets that are already closed after the cursor."
         }
       }
     }
