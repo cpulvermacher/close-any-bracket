@@ -149,7 +149,7 @@ export function getIndentationLevelAtLine(
  * @param languageId VSCode language identifier for text
  * @param options options for parsing
  * @param bracketFilter optional filter for brackets to consider
- * @returns array of missing closing brackets, or null if none found
+ * @returns array of missing opening brackets, or null if none found
  */
 export function getMissingBrackets(
     text: string,
@@ -184,37 +184,78 @@ export function getMissingBrackets(
     return bracketsToCloseAtCursor.length > 0 ? bracketsToCloseAtCursor : null;
 }
 
+/** returns opening brackets that are unclosed at cursor */
 function matchBrackets(
     brackets: BracketInfo[],
     cursorOffset: number,
     options: ParseOptions
-) {
-    const unclosedBrackets: BracketInfo[] = [];
+): BracketInfo[] {
+    const openBracketsBeforeCursor: BracketInfo[] = [];
     for (const bracket of brackets) {
-        if (!options.ignoreAlreadyClosed && bracket.offset >= cursorOffset) {
+        if (bracket.offset >= cursorOffset) {
             break;
         }
 
-        if (
-            bracket.bracket === '(' ||
-            bracket.bracket === '[' ||
-            bracket.bracket === '{'
-        ) {
-            //opening bracket
-            unclosedBrackets.push(bracket);
+        if (isOpeningBracket(bracket)) {
+            openBracketsBeforeCursor.push(bracket);
         } else {
-            //closing bracket
-            const lastOpened = unclosedBrackets[unclosedBrackets.length - 1];
+            const lastOpened =
+                openBracketsBeforeCursor[openBracketsBeforeCursor.length - 1];
             if (shouldStopMatching(lastOpened, bracket, cursorOffset)) {
                 break;
             }
 
             // remove last opened bracket
-            unclosedBrackets.pop();
+            openBracketsBeforeCursor.pop();
+        }
+    }
+    if (!options.ignoreAlreadyClosed) {
+        return openBracketsBeforeCursor;
+    }
+
+    const closedBracketsAfterCursor: BracketInfo[] = [];
+    // iterate in reverse since we are most likely in
+    // the middle of a file - we want to essentially repeat the above process
+    // from the end of the file
+    for (let i = brackets.length - 1; i >= 0; i--) {
+        const bracket = brackets[i];
+        if (bracket.offset < cursorOffset) {
+            break;
+        }
+
+        if (isOpeningBracket(bracket)) {
+            const lastClosed =
+                closedBracketsAfterCursor[closedBracketsAfterCursor.length - 1];
+            if (
+                lastClosed &&
+                toClosingBracket(bracket) === lastClosed.bracket
+            ) {
+                closedBracketsAfterCursor.pop();
+            }
+        } else {
+            closedBracketsAfterCursor.push(bracket);
         }
     }
 
-    return unclosedBrackets;
+    // match remaining unclosend brackets with unopened brackets from outside in
+    for (const closedBracket of closedBracketsAfterCursor) {
+        if (openBracketsBeforeCursor.length === 0) {
+            break;
+        }
+
+        const openBracket = openBracketsBeforeCursor[0];
+        if (toClosingBracket(openBracket) !== closedBracket.bracket) {
+            console.error(
+                "Can't match brackets around cursor",
+                openBracket,
+                closedBracket
+            );
+            break;
+        }
+
+        openBracketsBeforeCursor.shift();
+    }
+    return openBracketsBeforeCursor;
 }
 
 /** Returns all brackets in the given token stream.
@@ -252,6 +293,14 @@ export function getBracketsForContext(
         currentOffset += token.length;
     }
     return brackets;
+}
+
+function isOpeningBracket(bracket: BracketInfo): boolean {
+    return (
+        bracket.bracket === '(' ||
+        bracket.bracket === '[' ||
+        bracket.bracket === '{'
+    );
 }
 
 function toClosingBracket(bracket: BracketInfo): ClosingBracket {
