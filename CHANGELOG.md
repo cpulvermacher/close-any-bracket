@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.3.5] (pre-release)
+
+- Fix for "Ignore already closed" to close brackets in expected order
+- Enable "Ignore already closed" setting by default
+
 ## [0.3.4] (pre-release)
 
 - Fix closing brackets in the middle of text with "Close to indent" + ignoreAlreadyClosed
