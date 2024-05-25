@@ -64,6 +64,16 @@ describe('closeBracket', () => {
         expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
     });
 
+    it('with ignoreAlreadyClosed, does not close brackets if closed after cursor', () => {
+        const options = { ignoreAlreadyClosed: true };
+
+        expect(closeBracket('{({}', 0, 'javascript', options)).toBe(null);
+        expect(closeBracket('{({}', 1, 'javascript', options)).toBe('}');
+        expect(closeBracket('{({}', 2, 'javascript', options)).toBe(')');
+        expect(closeBracket('{({}', 3, 'javascript', options)).toBe('}');
+        expect(closeBracket('{({}', 4, 'javascript', options)).toBe(')');
+    });
+
     it('handles mismatched brackets', () => {
         //cursor before mismatched bracket
         expect(
