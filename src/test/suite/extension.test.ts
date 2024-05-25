@@ -5,8 +5,7 @@ const exampleJsFile = `
 if (abc) {
     abc.def({
 // <-- cursor here
-    });
-};
+}
 `;
 
 function withAddedTextAtCursor(text: string, addedText: string) {
@@ -40,7 +39,7 @@ suite('Extension ', () => {
         );
 
         const text = await waitForNewText;
-        assert.strictEqual(text, withAddedTextAtCursor(exampleJsFile, '})}\n'));
+        assert.strictEqual(text, withAddedTextAtCursor(exampleJsFile, '})\n'));
     });
 
     async function openEditor(
