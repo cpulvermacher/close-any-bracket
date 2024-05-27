@@ -199,14 +199,16 @@ function matchBrackets(
         if (isOpeningBracket(bracket)) {
             openBracketsBeforeCursor.push(bracket);
         } else {
-            const lastOpened =
-                openBracketsBeforeCursor[openBracketsBeforeCursor.length - 1];
-            if (shouldStopMatching(lastOpened, bracket, cursorOffset)) {
-                break;
-            }
-
             // remove last opened bracket
-            openBracketsBeforeCursor.pop();
+            const lastOpened = openBracketsBeforeCursor.pop();
+            if (
+                lastOpened &&
+                bracket.bracket !== toClosingBracket(lastOpened)
+            ) {
+                throw new Error(
+                    `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened?.bracket}`
+                );
+            }
         }
     }
     if (!options.ignoreAlreadyClosed) {
@@ -245,6 +247,7 @@ function matchBrackets(
 
         const openBracket = openBracketsBeforeCursor[0];
         if (toClosingBracket(openBracket) !== closedBracket.bracket) {
+            // this may still be good enough, so don't throw
             console.error(
                 "Can't match brackets around cursor",
                 openBracket,
@@ -313,26 +316,5 @@ function toClosingBracket(bracket: BracketInfo): ClosingBracket {
             return '}';
         default:
             throw new Error(`Unexpected bracket: ${bracket.bracket}`);
-    }
-}
-function shouldStopMatching(
-    lastOpened: BracketInfo,
-    bracket: BracketInfo,
-    cursorOffset: number
-): boolean {
-    if (lastOpened && bracket.bracket === toClosingBracket(lastOpened)) {
-        // this is the expected closing bracket
-        return false;
-    }
-
-    // some kind of mismatch...
-    if (cursorOffset <= bracket.offset) {
-        // ...this is a fairly normal thing if it happens after the cursor
-        return true;
-    } else {
-        // ...but before the cursor, it will probably mess up anything we do
-        throw new Error(
-            `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened?.bracket}`
-        );
     }
 }
