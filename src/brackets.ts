@@ -190,54 +190,14 @@ function matchBrackets(
     cursorOffset: number,
     options: ParseOptions
 ): BracketInfo[] {
-    const openBracketsBeforeCursor: BracketInfo[] = [];
-    for (const bracket of brackets) {
-        if (bracket.offset >= cursorOffset) {
-            break;
-        }
-
-        if (isOpeningBracket(bracket)) {
-            openBracketsBeforeCursor.push(bracket);
-        } else {
-            // remove last opened bracket
-            const lastOpened = openBracketsBeforeCursor.pop();
-            if (
-                lastOpened &&
-                bracket.bracket !== toClosingBracket(lastOpened)
-            ) {
-                throw new Error(
-                    `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened?.bracket}`
-                );
-            }
-        }
-    }
+    const openBracketsBeforeCursor: BracketInfo[] =
+        getUnclosedBracketsBeforeCursor(brackets, cursorOffset);
     if (!options.ignoreAlreadyClosed) {
         return openBracketsBeforeCursor;
     }
 
-    const closedBracketsAfterCursor: BracketInfo[] = [];
-    // iterate in reverse since we are most likely in
-    // the middle of a file - we want to essentially repeat the above process
-    // from the end of the file
-    for (let i = brackets.length - 1; i >= 0; i--) {
-        const bracket = brackets[i];
-        if (bracket.offset < cursorOffset) {
-            break;
-        }
-
-        if (isOpeningBracket(bracket)) {
-            const lastClosed =
-                closedBracketsAfterCursor[closedBracketsAfterCursor.length - 1];
-            if (
-                lastClosed &&
-                toClosingBracket(bracket) === lastClosed.bracket
-            ) {
-                closedBracketsAfterCursor.pop();
-            }
-        } else {
-            closedBracketsAfterCursor.push(bracket);
-        }
-    }
+    const closedBracketsAfterCursor: BracketInfo[] =
+        getUnopenedBracketsAfterCursor(brackets, cursorOffset);
 
     // match remaining unclosend brackets with unopened brackets from outside in
     for (const closedBracket of closedBracketsAfterCursor) {
@@ -259,6 +219,63 @@ function matchBrackets(
         openBracketsBeforeCursor.shift();
     }
     return openBracketsBeforeCursor;
+}
+
+function getUnclosedBracketsBeforeCursor(
+    brackets: BracketInfo[],
+    cursorOffset: number
+) {
+    const openBrackets: BracketInfo[] = [];
+    for (const bracket of brackets) {
+        if (bracket.offset >= cursorOffset) {
+            break;
+        }
+
+        if (isOpeningBracket(bracket)) {
+            openBrackets.push(bracket);
+        } else {
+            // remove last opened bracket
+            const lastOpened = openBrackets.pop();
+            if (
+                lastOpened &&
+                bracket.bracket !== toClosingBracket(lastOpened)
+            ) {
+                throw new Error(
+                    `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened?.bracket}`
+                );
+            }
+        }
+    }
+    return openBrackets;
+}
+
+function getUnopenedBracketsAfterCursor(
+    brackets: BracketInfo[],
+    cursorOffset: number
+) {
+    const closedBrackets: BracketInfo[] = [];
+    // iterate in reverse since we are most likely in
+    // the middle of a file - we want to essentially repeat the above process
+    // from the end of the file
+    for (let i = brackets.length - 1; i >= 0; i--) {
+        const bracket = brackets[i];
+        if (bracket.offset < cursorOffset) {
+            break;
+        }
+
+        if (isOpeningBracket(bracket)) {
+            const lastClosed = closedBrackets[closedBrackets.length - 1];
+            if (
+                lastClosed &&
+                toClosingBracket(bracket) === lastClosed.bracket
+            ) {
+                closedBrackets.pop();
+            }
+        } else {
+            closedBrackets.push(bracket);
+        }
+    }
+    return closedBrackets;
 }
 
 /** Returns all brackets in the given token stream.
