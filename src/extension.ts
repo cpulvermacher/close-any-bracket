@@ -1,69 +1,69 @@
 import * as vscode from 'vscode';
+
 import { closeBracket, closeToIndentAtLine } from './brackets';
+
+// called the first time a command is executed
+export function activate(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.commands.registerCommand('close-any-bracket.close', close),
+        vscode.commands.registerCommand(
+            'close-any-bracket.close-to-indent',
+            closeToIndent
+        )
+    );
+}
 
 export function deactivate() {
     /* nothing to do here */
 }
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-    const close = vscode.commands.registerCommand(
-        'close-any-bracket.close',
-        () => {
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) {
-                return;
-            }
+function close() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
 
-            const cursorPosition = editor.selection.active;
-            const cursorOffset = editor.document.offsetAt(cursorPosition);
+    const cursorPosition = editor.selection.active;
+    const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-            const insertString = closeBracket(
-                editor.document.getText(),
-                cursorOffset,
-                editor.document.languageId,
-                getParserOptions()
-            );
-
-            if (insertString) {
-                editor.edit((editBuilder) => {
-                    editBuilder.insert(editor.selection.active, insertString);
-                });
-            }
-        }
+    const insertString = closeBracket(
+        editor.document.getText(),
+        cursorOffset,
+        editor.document.languageId,
+        getParserOptions()
     );
 
-    const closeToIndent = vscode.commands.registerCommand(
-        'close-any-bracket.close-to-indent',
-        () => {
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) {
-                return;
-            }
+    if (insertString) {
+        editor.edit((editBuilder) => {
+            editBuilder.insert(editor.selection.active, insertString);
+        });
+    }
+}
 
-            const cursorPosition = editor.selection.active;
-            const cursorOffset = editor.document.offsetAt(cursorPosition);
+function closeToIndent() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
 
-            const missingBrackets = closeToIndentAtLine(
-                editor.document.getText(),
-                cursorOffset,
-                editor.document.languageId,
-                cursorPosition.line,
-                (line) => getLine(editor.document, line),
-                getParserOptions()
-            );
+    const cursorPosition = editor.selection.active;
+    const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-            if (missingBrackets) {
-                const insertString = missingBrackets + '\n';
-                editor.edit((editBuilder) => {
-                    editBuilder.insert(editor.selection.active, insertString);
-                });
-            }
-        }
+    const missingBrackets = closeToIndentAtLine(
+        editor.document.getText(),
+        cursorOffset,
+        editor.document.languageId,
+        cursorPosition.line,
+        (line) => getLine(editor.document, line),
+        getParserOptions()
     );
 
-    context.subscriptions.push(close, closeToIndent);
+    if (missingBrackets) {
+        const insertString = missingBrackets + '\n';
+        editor.edit((editBuilder) => {
+            editBuilder.insert(editor.selection.active, insertString);
+        });
+    }
 }
 
 function getParserOptions() {
