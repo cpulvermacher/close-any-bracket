@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.4.0]
+
+- Add new "Ignore already closed" setting (on by default) to avoid closing
+- (Includes changes from 0.3.0 to 0.3.5)
+
 ## [0.3.5] (pre-release)
 
 - Fix for "Ignore already closed" to close brackets in expected order
