@@ -3,7 +3,7 @@
   "displayName": "Close Any Bracket",
   "description": "Automatically close open braces, brackets, or parentheses in the right order.",
   "publisher": "cpulvermacher",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/cpulvermacher/close-any-bracket.git"
