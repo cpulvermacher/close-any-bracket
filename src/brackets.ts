@@ -199,7 +199,7 @@ function matchBrackets(
     const closedBracketsAfterCursor: BracketInfo[] =
         getUnopenedBracketsAfterCursor(brackets, cursorOffset);
 
-    // match remaining unclosend brackets with unopened brackets from outside in
+    // match remaining unclosed brackets with unopened brackets from outside in
     for (const closedBracket of closedBracketsAfterCursor) {
         if (openBracketsBeforeCursor.length === 0) {
             break;
