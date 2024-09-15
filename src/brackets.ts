@@ -241,7 +241,7 @@ function getUnclosedBracketsBeforeCursor(
                 bracket.bracket !== toClosingBracket(lastOpened)
             ) {
                 throw new Error(
-                    `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened?.bracket}`
+                    `Unexpected closing bracket ${bracket.bracket} in line ${bracket.lineNo}, but expected ${lastOpened.bracket}`
                 );
             }
         }
