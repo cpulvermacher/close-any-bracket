@@ -2,7 +2,7 @@
 
 ## [0.4.0]
 
-- Add new "Ignore already closed" setting (on by default) to avoid closing
+- Add new "Ignore already closed" setting (on by default) to avoid closing already closed brackets twice
 - (Includes changes from 0.3.0 to 0.3.5)
 
 ## [0.3.5] (pre-release)
