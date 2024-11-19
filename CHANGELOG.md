@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.1]
+
+- Improve description for "Ignore already closed"
+
 ## [0.4.0]
 
 - Add new "Ignore already closed" setting (on by default) to avoid closing already closed brackets twice
