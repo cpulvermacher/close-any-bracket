@@ -57,7 +57,7 @@
         "closeAnyBracket.ignoreAlreadyClosed": {
           "type": "boolean",
           "default": true,
-          "description": "Enable to avoid closing brackets that are already closed after the cursor."
+          "description": "When enabled, brackets that are already closed after the cursor will not be closed. When disabled, any closing brackets after the cursor position will be ignored and might be closed again."
         }
       }
     }
