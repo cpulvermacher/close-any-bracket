@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { closeBracket, closeToIndentAtLine } from '../brackets';
+import { closeBracket, closeToIndentAtLine } from './brackets';
 
 // called the first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
