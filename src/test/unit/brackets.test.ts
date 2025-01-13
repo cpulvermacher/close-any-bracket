@@ -172,7 +172,11 @@ describe('closeBracket', () => {
 });
 
 describe('closeToIndentAtLine', () => {
-    function closeToIndent(text: string, cursorOffset: number, languageId) {
+    function closeToIndent(
+        text: string,
+        cursorOffset: number,
+        languageId: string
+    ) {
         const lines = text.split('\n');
         const lineNoAtCursor =
             text.substring(0, cursorOffset).split('\n').length - 1;
