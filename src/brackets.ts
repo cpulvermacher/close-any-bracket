@@ -126,15 +126,13 @@ export function getIndentationLevelAtLine(
 
     let indentationLevel = 0;
     for (const c of line) {
-        if (c !== ' ' && c !== '\t') {
-            break;
-        }
-
         if (c === ' ') {
             indentationLevel++;
         } else if (c === '\t') {
             // Assuming a tab is equivalent to 4 spaces
             indentationLevel += 4;
+        } else {
+            break;
         }
     }
 
