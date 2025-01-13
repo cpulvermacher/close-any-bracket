@@ -1,8 +1,6 @@
-// allowed only in extension.ts, since it cannot be imported in unit tests.
-// eslint-disable-next-line no-restricted-imports
 import * as vscode from 'vscode';
 
-import { closeBracket, closeToIndentAtLine } from './brackets';
+import { closeBracket, closeToIndentAtLine } from '../brackets';
 
 // called the first time a command is executed
 export function activate(context: vscode.ExtensionContext) {

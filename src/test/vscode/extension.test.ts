@@ -1,6 +1,4 @@
 import assert from 'assert';
-// allowed only in extension.ts, since it cannot be imported in unit tests.
-// eslint-disable-next-line no-restricted-imports
 import * as vscode from 'vscode';
 
 const exampleJsFile = `

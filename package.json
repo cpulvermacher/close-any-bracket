@@ -66,7 +66,7 @@
     "check-exclusive": "ps aux | grep -v grep | grep -q 'esbuild.*--watch' && echo 'esbuild --watch running, aborting!' && exit 1 || exit 0",
     "copy-languages": "for f in node_modules/prismjs/components/prism-*.min.js; do cp \"$f\" \"out/$(basename \"${f%.min.*}\").js\"; done",
     "vscode:prepublish": "npm run check-exclusive && rm -rf ./out && npm run esbuild-base -- --minify --pure:console.debug && npm run copy-languages",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/vscode/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npx vsce package",

@@ -45,7 +45,7 @@ export default tseslint.config(
         }
     },
     {
-        files: ["src/vscode/**/*.ts"],
+        files: ["src/vscode/**/*.ts", "src/test/vscode/**/*.ts"],
         rules: {
             "@typescript-eslint/no-restricted-imports": "off"
         }
