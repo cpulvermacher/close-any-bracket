@@ -1,16 +1,8 @@
-.vscode
-.vscode-test
-.github
-.gitignore
-.yarnrc
-eslint.config.mjs
-**/tsconfig.json
-vitest.config.js
-**/*.map
-**/*.ts
-src/
-images/
+# ignore all files
+**
+# whitelist included files
+!LICENSE
+!CHANGELOG.md
 !images/icon.png
-node_modules
-tmp/
-out/test
+!out/extension.js
+!out/prism*.js
