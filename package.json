@@ -64,8 +64,7 @@
   },
   "scripts": {
     "check-exclusive": "ps aux | grep -v grep | grep -q 'esbuild.*--watch' && echo 'esbuild --watch running, aborting!' && exit 1 || exit 0",
-    "copy-languages": "for f in node_modules/prismjs/components/prism-*.min.js; do cp \"$f\" \"out/$(basename \"${f%.min.*}\").js\"; done",
-    "vscode:prepublish": "npm run check-exclusive && rm -rf ./out && npm run esbuild-base -- --minify --pure:console.debug && npm run copy-languages",
+    "vscode:prepublish": "npm run check-exclusive && rm -rf ./out && npm run esbuild-base -- --minify --pure:console.debug && sh ./scripts/copy-languages.sh",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --define:document=undefined --define:window=undefined",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "watch": "npm run esbuild-base -- --sourcemap --watch",
