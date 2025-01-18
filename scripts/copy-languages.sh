@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 
 # Copy PrismJS languages to the out directory.
+# Note that while vsce warns about performance issues with a large number of files, we typically only
+# load a single language when activating the extension.
+# If bundled together, we would need to load a single 600KB file when activating the extension,
+# which introduces a very noticeable delay when using keybindings.
 for f in node_modules/prismjs/components/prism-*.min.js
 do
     # via https://github.com/PrismJS/prism/blob/master/gulpfile.js/paths.js, the main prismjs bundle
