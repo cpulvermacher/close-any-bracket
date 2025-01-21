@@ -1,24 +1,8 @@
-import Prism, { languages } from 'prismjs';
+import Prism from 'prismjs';
 import { describe, expect, it } from 'vitest';
 
-import { Context, getContextAtCursor, getGrammar } from '../../parser';
+import { Context, getContextAtCursor } from '../../parser';
 import { isSingleToken } from '../../token';
-
-describe('getGrammar', () => {
-    it('returns null for unknown language', () => {
-        expect(getGrammar('')).toBe(null);
-    });
-
-    it('maps from VSCode language to grammar', () => {
-        expect(getGrammar('javascript')).toBe(languages['javascript']);
-        expect(getGrammar('javascriptreact')).toBe(languages['jsx']);
-        expect(getGrammar('jsonc')).toBe(languages['json']);
-        expect(getGrammar('typescript')).toBe(languages['typescript']);
-        expect(getGrammar('typescriptreact')).toBe(languages['tsx']);
-        expect(getGrammar('objective-c')).toBe(languages['objectivec']);
-        expect(getGrammar('shellscript')).toBe(languages['shell']);
-    });
-});
 
 describe('getContextAtCursor', () => {
     function expectContext(

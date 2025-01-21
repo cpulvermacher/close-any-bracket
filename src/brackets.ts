@@ -1,4 +1,4 @@
-import Prism from 'prismjs';
+import type Prism from 'prismjs';
 
 import { getContext } from './parser';
 import {

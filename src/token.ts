@@ -1,4 +1,4 @@
-import Prism from 'prismjs';
+import type Prism from 'prismjs';
 
 const BRACKET_CHARACTERS = new Set(['(', ')', '{', '}', '[', ']']);
 
