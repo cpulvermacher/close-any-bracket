@@ -47,9 +47,6 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
         case 'jsonc': // JSON with comments
             grammarId = 'json';
             break;
-        case 'typescriptreact':
-            grammarId = 'tsx';
-            break;
         case 'objective-c':
             grammarId = 'objectivec';
             break;
@@ -67,6 +64,9 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
             break;
         case 'svelte':
             grammarId = 'html';
+            break;
+        case 'typescriptreact':
+            grammarId = 'tsx';
             break;
         case 'Vimscript':
             grammarId = 'vim';
