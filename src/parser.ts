@@ -34,6 +34,25 @@ export function getContext(
 export function getGrammar(languageId: string): Prism.Grammar | null {
     let grammarId: string;
     switch (languageId) {
+        case 'bat':
+            grammarId = 'batch';
+            break;
+        case 'bibtex':
+            grammarId = 'tex';
+            break;
+        case 'cuda-cpp':
+            grammarId = 'cpp';
+            break;
+        case 'dockercompose':
+            grammarId = 'yaml';
+            break;
+        case 'git-commit':
+        case 'git-rebase':
+            grammarId = 'git';
+            break;
+        case 'jade':
+            grammarId = 'pug';
+            break;
         case 'javascriptreact':
             grammarId = 'jsx';
             break;
@@ -46,8 +65,30 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
         case 'objective-c':
             grammarId = 'objectivec';
             break;
+        case 'objective-cpp':
+            grammarId = 'cpp';
+            break;
+        case 'perl6':
+            grammarId = 'perl';
+            break;
         case 'shellscript':
             grammarId = 'shell';
+            break;
+        case 'slim':
+            grammarId = 'pug';
+            break;
+        case 'svelte':
+            grammarId = 'html';
+            break;
+        case 'Vimscript':
+            grammarId = 'vim';
+            break;
+        case 'vue':
+        case 'vue-html':
+            grammarId = 'html';
+            break;
+        case 'xsl':
+            grammarId = 'xml';
             break;
         default:
             grammarId = languageId;
