@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.5.0] (pre-release)
+
+- Add support for BibTeX, docker-compose, Cuda C++, Objective C++, Perl 6, jade/pug (partial support), ShaderLab, Slim, Svelte, and Vue
+- For files opened in "Plain Text" language mode, use file extension to choose syntax
+- Remove unused syntax files and browser-related code
+
 ## [0.4.1]
 
 - Improve description for "Ignore already closed"
