@@ -15,8 +15,9 @@ You may find this particularly useful with callback-heavy languages or framework
 
 ## Features
 
-- **Close all open brackets to current indent** - Checks the indentation level for the current line and closes all unclosed `(`, `[`, or `{` at this indentation level or deeper. (default shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>, Mac: <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>)
-- **Close last open (, [, or {** (default shortcut <kbd>Alt</kbd>+<kbd>]</kbd>, Mac: <kbd>Control</kbd>+<kbd>]</kbd>)
+- **Close all open brackets to current indent** - Automatically closes all unclosed `(`, `[`, or `{` at the current line's indentation level or deeper. (Default shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>, Mac: <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>)
+- **Close last open (, [, or {** - Closes the most recently opened `(`, `[`, or `{` that has not been closed yet. (Default shortcut <kbd>Alt</kbd>+<kbd>]</kbd>, Mac: <kbd>Control</kbd>+<kbd>]</kbd>)
+- Detects whether brackets are already closed after the cursor and avoids closing them again. (Configurable using `Close Any Bracket: Ignore Already Closed`, default: enabled)
 - Supports close to 300 languages including JavaScript, TypeScript, CSS, JSON, Python, Java, Go, C/C++/C#, HTML (with embedded JavaScript or CSS), Nix, TeX, Awk, JSX, TSX, Vue, Svelte.
 
 
