@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 # Copy PrismJS languages to the out directory.
 # Note that while vsce warns about performance issues with a large number of files, we typically only
