@@ -26,6 +26,7 @@ export function closeBracket(
     text: string,
     cursorOffset: number,
     languageId: string,
+    fileExtension: string,
     parseOptions: ParseOptions
 ): ClosingBracket | null {
     if (parseOptions.closeToIndent) {
@@ -38,6 +39,7 @@ export function closeBracket(
         text,
         cursorOffset,
         languageId,
+        fileExtension,
         parseOptions
     );
     if (!missing) {
@@ -65,6 +67,7 @@ export function closeToIndentAtLine(
     text: string,
     cursorOffset: number,
     languageId: string,
+    fileExtension: string,
     lineNo: number,
     getLine: (line: number) => string,
     parseOptions: ParseOptions
@@ -97,6 +100,7 @@ export function closeToIndentAtLine(
         text,
         cursorOffset,
         languageId,
+        fileExtension,
         parseOptions,
         filterBrackets
     );
@@ -153,10 +157,11 @@ export function getMissingBrackets(
     text: string,
     cursorOffset: number,
     languageId: string,
+    fileExtension: string,
     options: ParseOptions,
     bracketFilter?: (brackets: BracketInfo[]) => BracketInfo[]
 ): BracketInfo[] | null {
-    const context = getContext(text, cursorOffset, languageId);
+    const context = getContext(text, cursorOffset, languageId, fileExtension);
     if (context === null) {
         return null;
     }

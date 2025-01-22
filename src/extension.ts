@@ -30,6 +30,7 @@ function close() {
         editor.document.getText(),
         cursorOffset,
         editor.document.languageId,
+        getExtension(editor.document.fileName),
         getParserOptions()
     );
 
@@ -53,6 +54,7 @@ function closeToIndent() {
         editor.document.getText(),
         cursorOffset,
         editor.document.languageId,
+        getExtension(editor.document.fileName),
         cursorPosition.line,
         (line) => getLine(editor.document, line),
         getParserOptions()
@@ -76,4 +78,9 @@ function getParserOptions() {
 
 function getLine(document: vscode.TextDocument, line: number) {
     return document.lineAt(line).text;
+}
+
+function getExtension(fileName: string): string {
+    const parts = fileName.split('.');
+    return parts[parts.length - 1];
 }

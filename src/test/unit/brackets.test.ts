@@ -16,158 +16,172 @@ describe('a', () => {
 
 describe('closeBracket', () => {
     const options = { ignoreAlreadyClosed: false };
-    const optionsWithIgnoreClosed = { ignoreAlreadyClosed: true };
 
     it('closes open brackets', () => {
-        expect(closeBracket('(', 1, 'javascript', options)).toBe(')');
-        expect(closeBracket('{', 1, 'javascript', options)).toBe('}');
-        expect(closeBracket('[', 1, 'javascript', options)).toBe(']');
-        expect(closeBracket('(', 1, 'makefile', options)).toBe(')');
-        expect(closeBracket('{', 1, 'makefile', options)).toBe('}');
+        expect(closeBracket('(', 1, 'javascript', '', options)).toBe(')');
+        expect(closeBracket('{', 1, 'javascript', '', options)).toBe('}');
+        expect(closeBracket('[', 1, 'javascript', '', options)).toBe(']');
+        expect(closeBracket('(', 1, 'makefile', '', options)).toBe(')');
+        expect(closeBracket('{', 1, 'makefile', '', options)).toBe('}');
     });
 
     it('inserts nothing at position 0', () => {
-        expect(closeBracket('(', 0, 'javascript', options)).toBe(null);
+        expect(closeBracket('(', 0, 'javascript', '', options)).toBe(null);
     });
 
     it('ignores brackets if not relevant for language', () => {
-        expect(closeBracket('{([', 2, 'latex', options)).toBe('}');
-        expect(closeBracket('{([', 3, 'latex', options)).toBe(']');
-        expect(closeBracket('[', 1, 'makefile', options)).toBe(null);
+        expect(closeBracket('{([', 2, 'latex', '', options)).toBe('}');
+        expect(closeBracket('{([', 3, 'latex', '', options)).toBe(']');
+        expect(closeBracket('[', 1, 'makefile', '', options)).toBe(null);
     });
 
     it('ignores closed brackets', () => {
-        expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 6, 'javascript', '', options)).toBe(null);
     });
 
     it('ignores brackets closed after cursor', () => {
         const options = { ignoreAlreadyClosed: true };
 
-        expect(closeBracket('([{}])', 0, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 1, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 2, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 3, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 4, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 5, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 0, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 1, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 2, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 3, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 4, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 5, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 6, 'javascript', '', options)).toBe(null);
     });
 
     it('only takes closed brackets up to cursor into account', () => {
         const options = { ignoreAlreadyClosed: false };
 
-        expect(closeBracket('([{}])', 0, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{}])', 1, 'javascript', options)).toBe(')');
-        expect(closeBracket('([{}])', 2, 'javascript', options)).toBe(']');
-        expect(closeBracket('([{}])', 3, 'javascript', options)).toBe('}');
-        expect(closeBracket('([{}])', 4, 'javascript', options)).toBe(']');
-        expect(closeBracket('([{}])', 5, 'javascript', options)).toBe(')');
-        expect(closeBracket('([{}])', 6, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{}])', 0, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('([{}])', 1, 'javascript', '', options)).toBe(')');
+        expect(closeBracket('([{}])', 2, 'javascript', '', options)).toBe(']');
+        expect(closeBracket('([{}])', 3, 'javascript', '', options)).toBe('}');
+        expect(closeBracket('([{}])', 4, 'javascript', '', options)).toBe(']');
+        expect(closeBracket('([{}])', 5, 'javascript', '', options)).toBe(')');
+        expect(closeBracket('([{}])', 6, 'javascript', '', options)).toBe(null);
     });
 
     it('with ignoreAlreadyClosed, does not close brackets if closed after cursor', () => {
         const options = { ignoreAlreadyClosed: true };
 
-        expect(closeBracket('{({}', 0, 'javascript', options)).toBe(null);
-        expect(closeBracket('{({}', 1, 'javascript', options)).toBe('}');
-        expect(closeBracket('{({}', 2, 'javascript', options)).toBe(')');
-        expect(closeBracket('{({}', 3, 'javascript', options)).toBe('}');
-        expect(closeBracket('{({}', 4, 'javascript', options)).toBe(')');
+        expect(closeBracket('{({}', 0, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('{({}', 1, 'javascript', '', options)).toBe('}');
+        expect(closeBracket('{({}', 2, 'javascript', '', options)).toBe(')');
+        expect(closeBracket('{({}', 3, 'javascript', '', options)).toBe('}');
+        expect(closeBracket('{({}', 4, 'javascript', '', options)).toBe(')');
     });
 
     it('handles mismatched brackets', () => {
+        const options = { ignoreAlreadyClosed: true };
         //cursor before mismatched bracket
-        expect(
-            closeBracket('({ ({} })', 6, 'javascript', optionsWithIgnoreClosed)
-        ).toBe(')');
-        expect(
-            closeBracket('({ ({} })', 7, 'javascript', optionsWithIgnoreClosed)
-        ).toBe(')');
+        expect(closeBracket('({ ({} })', 6, 'javascript', '', options)).toBe(
+            ')'
+        );
+        expect(closeBracket('({ ({} })', 7, 'javascript', '', options)).toBe(
+            ')'
+        );
 
         //cursor after mismatched bracket
         expect(() =>
-            closeBracket('({ ({} })', 8, 'javascript', optionsWithIgnoreClosed)
+            closeBracket('({ ({} })', 8, 'javascript', '', options)
         ).toThrow();
         expect(() =>
-            closeBracket('({ ({} })', 9, 'javascript', optionsWithIgnoreClosed)
+            closeBracket('({ ({} })', 9, 'javascript', '', options)
         ).toThrow();
     });
 
     it('closes missing brackets in the middle', () => {
+        const options = { ignoreAlreadyClosed: true };
         const missingBracket = closeBracket(
             javascriptWithUnclosedBracketsInMiddle,
             javascriptWithUnclosedBracketsInMiddle.indexOf('// here'),
             'javascript',
-            optionsWithIgnoreClosed
+            '',
+            options
         );
         expect(missingBracket).toBe('}');
     });
 
     // strings
     it('does not close open brackets within strings', () => {
-        expect(closeBracket('"{(["', 2, 'javascript', options)).toBe(null);
-        expect(closeBracket('"{(["', 3, 'javascript', options)).toBe(null);
-        expect(closeBracket('"{(["', 4, 'javascript', options)).toBe(null);
-        expect(closeBracket('"{(["', 5, 'javascript', options)).toBe(null);
+        expect(closeBracket('"{(["', 2, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('"{(["', 3, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('"{(["', 4, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('"{(["', 5, 'javascript', '', options)).toBe(null);
     });
 
     it('does not close brackets before string if inside string', () => {
-        expect(closeBracket('["("', 1, 'javascript', options)).toBe(']'); //before "
-        expect(closeBracket('["("', 2, 'javascript', options)).toBe(null);
-        expect(closeBracket('["("', 3, 'javascript', options)).toBe(null);
-        expect(closeBracket('["("', 4, 'javascript', options)).toBe(']'); //after "
+        expect(closeBracket('["("', 1, 'javascript', '', options)).toBe(']'); //before "
+        expect(closeBracket('["("', 2, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('["("', 3, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('["("', 4, 'javascript', '', options)).toBe(']'); //after "
 
-        expect(closeBracket("['('", 1, 'javascript', options)).toBe(']'); //before '
-        expect(closeBracket("['('", 2, 'javascript', options)).toBe(null);
-        expect(closeBracket("['('", 3, 'javascript', options)).toBe(null);
-        expect(closeBracket("['('", 4, 'javascript', options)).toBe(']'); //after '
+        expect(closeBracket("['('", 1, 'javascript', '', options)).toBe(']'); //before '
+        expect(closeBracket("['('", 2, 'javascript', '', options)).toBe(null);
+        expect(closeBracket("['('", 3, 'javascript', '', options)).toBe(null);
+        expect(closeBracket("['('", 4, 'javascript', '', options)).toBe(']'); //after '
     });
 
     // template strings
     it('does not close open brackets within template strings', () => {
-        expect(closeBracket('`{([`', 5, 'javascript', options)).toBe(null);
+        expect(closeBracket('`{([`', 5, 'javascript', '', options)).toBe(null);
     });
 
     it('closes open brackets within template string interpolation', () => {
-        expect(closeBracket('`${`', 3, 'javascript', options)).toBe('}');
-        expect(closeBracket('`${(`', 4, 'javascript', options)).toBe(')');
+        expect(closeBracket('`${`', 3, 'javascript', '', options)).toBe('}');
+        expect(closeBracket('`${(`', 4, 'javascript', '', options)).toBe(')');
     });
 
     //Note: sadly this doesn't work because while brackets are unclosed, the parser doesn't recognize the template string
     it.skip('does not close open brackets within template string interpolation if cursor outside template string', () => {
-        expect(closeBracket('`${`', 4, 'javascript', options)).toBe(null);
-        expect(closeBracket('`${(`', 5, 'javascript', options)).toBe(null);
+        expect(closeBracket('`${`', 4, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('`${(`', 5, 'javascript', '', options)).toBe(null);
     });
 
     it.skip('closes brackets before template string', () => {
-        expect(closeBracket('(`${[}`', 7, 'javascript', options)).toBe(')');
+        expect(closeBracket('(`${[}`', 7, 'javascript', '', options)).toBe(')');
     });
 
     // comments
     it('does not close open brackets within comments', () => {
-        expect(closeBracket('/*{(["', 5, 'javascript', options)).toBe(null);
-        expect(closeBracket('//([{', 5, 'javascript', options)).toBe(null);
-        expect(closeBracket('#([{', 4, 'makefile', options)).toBe(null);
+        expect(closeBracket('/*{(["', 5, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('//([{', 5, 'javascript', '', options)).toBe(null);
+        expect(closeBracket('#([{', 4, 'makefile', '', options)).toBe(null);
     });
 
     it('does not close brackets before comment if inside comment', () => {
-        expect(closeBracket('([{ /* */', 5, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{ /* */', 6, 'javascript', options)).toBe(null);
-        expect(closeBracket('([{ /* */', 7, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{ /* */', 5, 'javascript', '', options)).toBe(
+            null
+        );
+        expect(closeBracket('([{ /* */', 6, 'javascript', '', options)).toBe(
+            null
+        );
+        expect(closeBracket('([{ /* */', 7, 'javascript', '', options)).toBe(
+            null
+        );
 
-        expect(closeBracket('([{ // ', 6, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{ // ', 6, 'javascript', '', options)).toBe(
+            null
+        );
     });
 
     it('does not close brackets before comment at end of comment (multi-line comment)', () => {
-        expect(closeBracket('([{ /* */', 8, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{ /* */', 8, 'javascript', '', options)).toBe(
+            null
+        );
     });
 
     it.skip('does not close brackets before comment at end of comment (single-line comment)', () => {
-        expect(closeBracket('([{ // ', 7, 'javascript', options)).toBe(null);
+        expect(closeBracket('([{ // ', 7, 'javascript', '', options)).toBe(
+            null
+        );
     });
 
     it('closes brackets before comment ', () => {
-        expect(closeBracket('[ /*(*/', 7, 'javascript', options)).toBe(']');
-        expect(closeBracket('[ // \n', 6, 'javascript', options)).toBe(']');
+        expect(closeBracket('[ /*(*/', 7, 'javascript', '', options)).toBe(']');
+        expect(closeBracket('[ // \n', 6, 'javascript', '', options)).toBe(']');
     });
 });
 
@@ -186,6 +200,7 @@ describe('closeToIndentAtLine', () => {
             text,
             cursorOffset,
             languageId,
+            '',
             lineNoAtCursor,
             getLine,
             { ignoreAlreadyClosed: false }
@@ -228,6 +243,7 @@ describe('closeToIndentAtLine', () => {
                     code,
                     offsetBeginningOfLine,
                     language,
+                    '',
                     i,
                     getLine,
                     { ignoreAlreadyClosed: !untilCursor }
@@ -278,6 +294,7 @@ describe('closeToIndentAtLine', () => {
             javascriptWithUnclosedBracketsInMiddle,
             cursorOffset,
             'javascript',
+            'js',
             lineNoAtCursor,
             getLine,
             options

@@ -13,9 +13,10 @@ export type Context = {
 export function getContext(
     text: string,
     cursorOffset: number,
-    languageId: string
+    languageId: string,
+    fileExtension: string
 ): Context | null {
-    const allTokens = tokenize(text, languageId);
+    const allTokens = tokenize(text, languageId, fileExtension);
     if (!allTokens) {
         return null;
     }

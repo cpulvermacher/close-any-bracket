@@ -4,11 +4,14 @@ import loadLanguages from 'prismjs/components/index';
 
 export function tokenize(
     text: string,
-    languageId: string
+    languageId: string,
+    fileExtension: string
 ): Prism.TokenStream | null {
-    const grammar = getGrammar(languageId);
+    const grammar = getGrammar(languageId, fileExtension);
     if (!grammar) {
-        console.log(`Couldn't find grammar for language ${languageId}`);
+        console.log(
+            `Couldn't find grammar for language ${languageId}, file extension ${fileExtension}`
+        );
         return null;
     }
 
@@ -19,7 +22,10 @@ export function tokenize(
  * Maps VSCode language identifiers (https://code.visualstudio.com/docs/languages/identifiers)
  * to Grammar (https://prismjs.com/#supported-languages) or null if not found
  */
-export function getGrammar(languageId: string): Prism.Grammar | null {
+export function getGrammar(
+    languageId: string,
+    fileExtension?: string
+): Prism.Grammar | null {
     let grammarId: string;
     switch (languageId) {
         case 'bat':
@@ -81,6 +87,12 @@ export function getGrammar(languageId: string): Prism.Grammar | null {
         default:
             grammarId = languageId;
             break;
+    }
+
+    const plaintextIds = ['plaintext', 'text', 'txt'];
+    if (plaintextIds.includes(languageId) && fileExtension) {
+        // plaintext is not going to be helpful, use the file extension instead
+        grammarId = fileExtension;
     }
 
     if (!(grammarId in Prism.languages)) {

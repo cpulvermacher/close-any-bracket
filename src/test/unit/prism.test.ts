@@ -33,4 +33,24 @@ describe('getGrammar', () => {
         expect(getGrammar('vue-html')).toBe(languages['html']);
         expect(getGrammar('xsl')).toBe(languages['xml']);
     });
+
+    it('for plaintext, returns plaintextGrammar without extension', () => {
+        expect(getGrammar('plaintext')).toEqual({});
+        expect(getGrammar('text')).toEqual({});
+        expect(getGrammar('txt')).toEqual({});
+    });
+
+    it('for plaintext, returns grammar using extension if available', () => {
+        expect(getGrammar('plaintext', 'md')).toBe(languages['markdown']);
+        expect(getGrammar('text', 'md')).toBe(languages['markdown']);
+        expect(getGrammar('txt', 'md')).toBe(languages['markdown']);
+
+        expect(getGrammar('plaintext', 'html')).toBe(languages['html']);
+
+        expect(getGrammar('plaintext', 'nix')).not.toEqual({});
+        expect(getGrammar('plaintext', 'nix')).toBe(languages['nix']);
+
+        expect(getGrammar('plaintext', 'awk')).not.toEqual({});
+        expect(getGrammar('plaintext', 'awk')).toBe(languages['awk']);
+    });
 });
