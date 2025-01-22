@@ -62,7 +62,7 @@ suite('Extension ', () => {
     }
 
     /**
-     * text seems to be updated asynchronuously, so document.getText() may
+     * text seems to be updated asynchronously, so document.getText() may
      * return old text until this event is triggered.
      */
     function waitForTextChange(document: vscode.TextDocument): Promise<string> {

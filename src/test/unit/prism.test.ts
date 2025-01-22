@@ -23,6 +23,8 @@ describe('getGrammar', () => {
         expect(getGrammar('objective-c')).toBe(languages['objectivec']);
         expect(getGrammar('objective-cpp')).toBe(languages['cpp']);
         expect(getGrammar('perl6')).toBe(languages['perl']);
+        expect(getGrammar('raku')).toBe(languages['perl']);
+        expect(getGrammar('shaderlab')).toBe(languages['clike']);
         expect(getGrammar('shellscript')).toBe(languages['shell']);
         expect(getGrammar('slim')).toBe(languages['pug']);
         expect(getGrammar('svelte')).toBe(languages['html']);
