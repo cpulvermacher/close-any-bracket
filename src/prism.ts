@@ -23,7 +23,8 @@ export function tokenize(
 
 /**
  * Maps VSCode language identifiers (https://code.visualstudio.com/docs/languages/identifiers)
- * to Grammar (https://prismjs.com/#supported-languages) or null if not found
+ * to Grammar (https://prismjs.com/#supported-languages) or null if not found.
+ * Note that the list of identifiers for VSCode is not exhaustive and maybe outdated, it's best to test file types in question.
  */
 export function getGrammar(
     languageId: string,
@@ -63,6 +64,7 @@ export function getGrammar(
             grammarId = 'cpp';
             break;
         case 'perl6':
+        case 'raku':
             grammarId = 'perl';
             break;
         case 'shaderlab':
