@@ -1,4 +1,7 @@
-Prism.manual = true; //disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
+//disable automatic highlighting (we have no document where that could happen, but let's do it for good measure)
+global.Prism = global.Prism || {};
+global.Prism.manual = true;
+
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index';
 
