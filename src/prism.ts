@@ -65,6 +65,9 @@ export function getGrammar(
         case 'perl6':
             grammarId = 'perl';
             break;
+        case 'shaderlab':
+            grammarId = 'clike';
+            break;
         case 'shellscript':
             grammarId = 'shell';
             break;
@@ -95,7 +98,14 @@ export function getGrammar(
     const plaintextIds = ['plaintext', 'text', 'txt'];
     if (plaintextIds.includes(languageId) && fileExtension) {
         // plaintext is not going to be helpful, use the file extension instead
-        grammarId = fileExtension;
+        switch (fileExtension) {
+            case 'sqf':
+                grammarId = 'clike';
+                break;
+            default:
+                grammarId = fileExtension;
+                break;
+        }
     }
 
     if (!(grammarId in Prism.languages)) {
