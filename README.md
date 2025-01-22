@@ -15,9 +15,9 @@ You may find this particularly useful with callback-heavy languages or framework
 
 ## Features
 
-- **Close last open (, [, or {** (default shortcut <kbd>Alt</kbd>+<kbd>]</kbd>, Mac: <kbd>Control</kbd>+<kbd>]</kbd>)
 - **Close all open brackets to current indent** - Checks the indentation level for the current line and closes all unclosed `(`, `[`, or `{` at this indentation level or deeper. (default shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>, Mac: <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>)
-- Supports close to 300 languages including JavaScript, TypeScript, CSS, JSON, Python, Java, Go, C/C++/C#, HTML (with embedded JavaScript or CSS).
+- **Close last open (, [, or {** (default shortcut <kbd>Alt</kbd>+<kbd>]</kbd>, Mac: <kbd>Control</kbd>+<kbd>]</kbd>)
+- Supports close to 300 languages including JavaScript, TypeScript, CSS, JSON, Python, Java, Go, C/C++/C#, HTML (with embedded JavaScript or CSS), Nix, TeX, Awk, JSX, TSX, Vue, Svelte.
 
 
 ## Limitations
