@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.5.1]
+- Same contents as 0.5.0
+
 ## [0.5.0] (pre-release)
 
 - Add support for BibTeX, docker-compose, Cuda C++, Objective C++, jade/pug (partial support), Raku, ShaderLab, Slim, Svelte, and Vue
