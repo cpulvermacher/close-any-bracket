@@ -71,7 +71,8 @@
     "build": "npx vsce package",
     "pretest": "tsc -p ./",
     "lint": "eslint src && tsc --noEmit && prettier src --check",
-    "test": "vitest --run && node ./out/test/runTest.js"
+    "test": "vitest --run && node ./out/test/runTest.js",
+    "checkall": "npm run test && npm run lint && npm run build"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
