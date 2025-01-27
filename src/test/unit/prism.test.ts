@@ -54,5 +54,7 @@ describe('getGrammar', () => {
 
         expect(getGrammar('plaintext', 'awk')).not.toEqual({});
         expect(getGrammar('plaintext', 'awk')).toBe(languages['awk']);
+
+        expect(getGrammar('plaintext', 'bru')).toBe(languages['javascript']);
     });
 });

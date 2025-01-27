@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.5.2]
+- Add support for Bruno files (.bru)
+
 ## [0.5.1]
 - Same contents as 0.5.0
 

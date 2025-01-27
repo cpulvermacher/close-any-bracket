@@ -104,6 +104,9 @@ export function getGrammar(
             case 'sqf':
                 grammarId = 'clike';
                 break;
+            case 'bru': // Bruno files
+                grammarId = 'javascript';
+                break;
             default:
                 grammarId = fileExtension;
                 break;
