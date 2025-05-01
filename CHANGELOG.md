@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.5.3] (pre-release)
+- Update dependencies
+
 ## [0.5.2]
 - Add support for Bruno files (.bru)
 
