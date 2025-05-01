@@ -6,7 +6,6 @@ settings:
 
 overrides:
   tar-fs@>=2.0.0 <2.1.2: '>=2.1.2'
-  vite@>=6.2.0 <6.2.6: '>=6.2.6'
 
 importers:
 
@@ -520,7 +519,7 @@ packages:
     resolution: {integrity: sha512-kOtd6K2lc7SQ0mBqYv/wdGedlqPdM/B38paPY+OwJ1XiNi44w3Fpog82UfOibmHaV9Wod18A09I9SCKLyDMqgw==}
     peerDependencies:
       msw: ^2.4.9
-      vite: '>=6.2.6'
+      vite: ^5.0.0 || ^6.0.0
     peerDependenciesMeta:
       msw:
         optional: true
