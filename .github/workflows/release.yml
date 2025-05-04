@@ -1,4 +1,6 @@
 name: Release
+permissions:
+  contents: write
 
 on:
   push:
@@ -8,8 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -34,5 +34,6 @@ jobs:
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
       run: >-
         bash .github/workflows/release.sh ${{ github.ref_name }}
