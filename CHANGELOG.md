@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.5.4] (pre-release)
+- Automate release process
+
 ## [0.5.3] (pre-release)
 - Update dependencies
 
