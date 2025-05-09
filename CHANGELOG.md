@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.0]
+- Promoted 0.5.4 to stable release as no significant changes are expected at the moment.
+
 ## [0.5.4] (pre-release)
 - Automate release process
 
