@@ -76,20 +76,21 @@
     "checkall": "pnpm test && pnpm lint && pnpm build"
   },
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/prismjs": "^1.26.5",
     "@types/vscode": "^1.95.0",
     "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.3.2",
-    "esbuild": "^0.25.3",
-    "eslint": "^9.25.1",
-    "glob": "^11.0.2",
-    "mocha": "^11.1.0",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.31.1",
-    "vitest": "^3.1.2"
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.9",
+    "eslint": "^9.34.0",
+    "glob": "^11.0.3",
+    "mocha": "^11.7.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.41.0",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "prismjs": "^1.30.0"
