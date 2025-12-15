@@ -301,6 +301,33 @@ describe('closeToIndentAtLine', () => {
         );
         expect(missingBrackets).toBe('})');
     });
+
+    [2, 4].forEach((tabSize) => {
+        it(`handles mixed indent with both tabs and spaces with tabsize = ${tabSize}`, () => {
+            // Mixed indentation: spaces and tabs
+            const spaceIndentLevel1 = ' '.repeat(tabSize);
+            const code = `{
+${spaceIndentLevel1}{
+\t{
+\t`;
+            const lines = code.split('\n');
+            const getLine = (line: number) => lines[line];
+            const cursorLine = 3;
+            const cursorOffset = code.length;
+
+            const result = closeToIndentAtLine(
+                code,
+                cursorOffset,
+                'javascript',
+                'js',
+                cursorLine,
+                getLine,
+                { ignoreAlreadyClosed: false }
+            );
+
+            expect(result).toBe('}}');
+        });
+    });
 });
 
 describe('getIndentationLevelAtLine', () => {
