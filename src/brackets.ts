@@ -211,7 +211,7 @@ function matchBrackets(
         const openBracket = openBracketsBeforeCursor[0];
         if (toClosingBracket(openBracket) !== closedBracket.bracket) {
             // this may still be good enough, so don't throw
-            console.error(
+            console.warn(
                 "Can't match brackets around cursor",
                 openBracket,
                 closedBracket
