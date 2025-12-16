@@ -31,7 +31,7 @@ function close() {
         cursorOffset,
         editor.document.languageId,
         getExtension(editor.document.fileName),
-        getParserOptions()
+        getParserOptions(editor)
     );
 
     if (insertString) {
@@ -57,7 +57,7 @@ function closeToIndent() {
         getExtension(editor.document.fileName),
         cursorPosition.line,
         (line) => getLine(editor.document, line),
-        getParserOptions()
+        getParserOptions(editor)
     );
 
     if (missingBrackets) {
@@ -68,12 +68,15 @@ function closeToIndent() {
     }
 }
 
-function getParserOptions() {
+function getParserOptions(editor: vscode.TextEditor) {
     const config = vscode.workspace.getConfiguration();
     const ignoreAlreadyClosed = config.get<boolean>(
-        'closeAnyBracket.ignoreAlreadyClosed'
+        'closeAnyBracket.ignoreAlreadyClosed',
+        true
     );
-    return { ignoreAlreadyClosed };
+    const tabSize =
+        typeof editor.options.tabSize === 'number' ? editor.options.tabSize : 4;
+    return { ignoreAlreadyClosed, tabSize };
 }
 
 function getLine(document: vscode.TextDocument, line: number) {

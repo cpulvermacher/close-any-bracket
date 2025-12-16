@@ -15,7 +15,7 @@ describe('a', () => {
 `;
 
 describe('closeBracket', () => {
-    const options = { ignoreAlreadyClosed: false };
+    const options = { ignoreAlreadyClosed: false, tabSize: 4 };
 
     it('closes open brackets', () => {
         expect(closeBracket('(', 1, 'javascript', '', options)).toBe(')');
@@ -40,7 +40,7 @@ describe('closeBracket', () => {
     });
 
     it('ignores brackets closed after cursor', () => {
-        const options = { ignoreAlreadyClosed: true };
+        const options = { ignoreAlreadyClosed: true, tabSize: 4 };
 
         expect(closeBracket('([{}])', 0, 'javascript', '', options)).toBe(null);
         expect(closeBracket('([{}])', 1, 'javascript', '', options)).toBe(null);
@@ -52,7 +52,7 @@ describe('closeBracket', () => {
     });
 
     it('only takes closed brackets up to cursor into account', () => {
-        const options = { ignoreAlreadyClosed: false };
+        const options = { ignoreAlreadyClosed: false, tabSize: 4 };
 
         expect(closeBracket('([{}])', 0, 'javascript', '', options)).toBe(null);
         expect(closeBracket('([{}])', 1, 'javascript', '', options)).toBe(')');
@@ -64,7 +64,7 @@ describe('closeBracket', () => {
     });
 
     it('with ignoreAlreadyClosed, does not close brackets if closed after cursor', () => {
-        const options = { ignoreAlreadyClosed: true };
+        const options = { ignoreAlreadyClosed: true, tabSize: 4 };
 
         expect(closeBracket('{({}', 0, 'javascript', '', options)).toBe(null);
         expect(closeBracket('{({}', 1, 'javascript', '', options)).toBe('}');
@@ -74,7 +74,7 @@ describe('closeBracket', () => {
     });
 
     it('handles mismatched brackets', () => {
-        const options = { ignoreAlreadyClosed: true };
+        const options = { ignoreAlreadyClosed: true, tabSize: 4 };
         //cursor before mismatched bracket
         expect(closeBracket('({ ({} })', 6, 'javascript', '', options)).toBe(
             ')'
@@ -93,7 +93,7 @@ describe('closeBracket', () => {
     });
 
     it('closes missing brackets in the middle', () => {
-        const options = { ignoreAlreadyClosed: true };
+        const options = { ignoreAlreadyClosed: true, tabSize: 4 };
         const missingBracket = closeBracket(
             javascriptWithUnclosedBracketsInMiddle,
             javascriptWithUnclosedBracketsInMiddle.indexOf('// here'),
@@ -203,7 +203,7 @@ describe('closeToIndentAtLine', () => {
             '',
             lineNoAtCursor,
             getLine,
-            { ignoreAlreadyClosed: false }
+            { ignoreAlreadyClosed: false, tabSize: 4 }
         );
     }
 
@@ -246,7 +246,7 @@ describe('closeToIndentAtLine', () => {
                     '',
                     i,
                     getLine,
-                    { ignoreAlreadyClosed: !untilCursor }
+                    { ignoreAlreadyClosed: !untilCursor, tabSize: 4 }
                 );
 
                 expect(result, `failure in last line of: ${code}`).toBe(
@@ -280,7 +280,7 @@ describe('closeToIndentAtLine', () => {
     });
 
     it('closes missing brackets in the middle', () => {
-        const options = { ignoreAlreadyClosed: true };
+        const options = { ignoreAlreadyClosed: true, tabSize: 4 };
         const cursorOffset =
             javascriptWithUnclosedBracketsInMiddle.indexOf('// here');
         const lines = javascriptWithUnclosedBracketsInMiddle.split('\n');
@@ -322,7 +322,7 @@ ${spaceIndentLevel1}{
                 'js',
                 cursorLine,
                 getLine,
-                { ignoreAlreadyClosed: false }
+                { ignoreAlreadyClosed: false, tabSize }
             );
 
             expect(result).toBe('}}');
@@ -332,19 +332,33 @@ ${spaceIndentLevel1}{
 
 describe('getIndentationLevelAtLine', () => {
     it('returns 0 for empty line', () => {
-        expect(getIndentationLevelAtLine(0, () => '')).toBe(0);
-        expect(getIndentationLevelAtLine(1, () => '')).toBe(0);
+        expect(getIndentationLevelAtLine(0, () => '', 2)).toBe(0);
+        expect(getIndentationLevelAtLine(1, () => '', 2)).toBe(0);
     });
 
     it('returns indent for line with only whitespace', () => {
-        expect(getIndentationLevelAtLine(0, () => '   ')).toBe(3);
+        expect(getIndentationLevelAtLine(0, () => '   ', 2)).toBe(3);
     });
 
     it('returns 1 for line with one space indent', () => {
-        expect(getIndentationLevelAtLine(0, () => ' abc')).toBe(1);
+        expect(getIndentationLevelAtLine(0, () => ' abc', 2)).toBe(1);
     });
 
-    it('returns 4 for line with one tab indent', () => {
-        expect(getIndentationLevelAtLine(0, () => '\tabc')).toBe(4);
+    it('returns 4 for line with one tab indent (tabSize = 4)', () => {
+        expect(getIndentationLevelAtLine(0, () => '\tabc', 4)).toBe(4);
+    });
+
+    it('respects custom tab size', () => {
+        expect(getIndentationLevelAtLine(0, () => '\tabc', 2)).toBe(2);
+        expect(getIndentationLevelAtLine(0, () => '\tabc', 8)).toBe(8);
+        expect(getIndentationLevelAtLine(0, () => '\t\tabc', 2)).toBe(4);
+        expect(getIndentationLevelAtLine(0, () => '\t\tabc', 8)).toBe(16);
+    });
+
+    it('handles mixed spaces and tabs with custom tab size', () => {
+        // 1 tab (2 spaces) + 2 spaces = 4 total with tabSize=2
+        expect(getIndentationLevelAtLine(0, () => '\t  abc', 2)).toBe(4);
+        // 1 tab (4 spaces) + 2 spaces = 6 total with tabSize=4
+        expect(getIndentationLevelAtLine(0, () => '\t  abc', 4)).toBe(6);
     });
 });

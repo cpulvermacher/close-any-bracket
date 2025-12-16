@@ -19,6 +19,7 @@ export type ClosingBracket = ')' | ']' | '}';
 export type ParseOptions = {
     ignoreAlreadyClosed?: boolean;
     closeToIndent?: boolean;
+    tabSize: number;
 };
 
 /** get single bracket that should be closed at cursor position */
@@ -73,20 +74,28 @@ export function closeToIndentAtLine(
     parseOptions: ParseOptions
 ): string {
     // get line range for block at lineNo with same or higher indentation
-    const targetIndent = getIndentationLevelAtLine(lineNo, getLine);
+    const targetIndent = getIndentationLevelAtLine(
+        lineNo,
+        getLine,
+        parseOptions.tabSize
+    );
     const filterBrackets = (brackets: BracketInfo[]) => {
         if (targetIndent === 0) {
             return brackets;
         }
 
-        let targetBrackets: BracketInfo[] = [];
+        const targetBrackets: BracketInfo[] = [];
         for (const bracket of brackets) {
-            const indent = getIndentationLevelAtLine(bracket.lineNo, getLine);
+            const indent = getIndentationLevelAtLine(
+                bracket.lineNo,
+                getLine,
+                parseOptions.tabSize
+            );
             if (indent >= targetIndent) {
                 targetBrackets.push(bracket);
             } else if (bracket.lineNo < lineNo) {
                 //block ended before target line, discard
-                targetBrackets = [];
+                targetBrackets.length = 0;
             } else {
                 //block ended after target line, we're done
                 break;
@@ -121,10 +130,12 @@ export function closeToIndentAtLine(
  *
  * @param lineNo line number
  * @param getLine function that returns the content of a specific line.
+ * @param tabSize number of spaces a tab is equivalent to
  */
 export function getIndentationLevelAtLine(
     lineNo: number,
-    getLine: (line: number) => string
+    getLine: (line: number) => string,
+    tabSize: number
 ): number {
     const line = getLine(lineNo);
 
@@ -133,8 +144,7 @@ export function getIndentationLevelAtLine(
         if (c === ' ') {
             indentationLevel++;
         } else if (c === '\t') {
-            // Assuming a tab is equivalent to 4 spaces
-            indentationLevel += 4;
+            indentationLevel += tabSize;
         } else {
             break;
         }
