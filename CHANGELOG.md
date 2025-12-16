@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.1] (pre-release)
+- Handle mixed tab and space indentation using editor tab size.
+
 ## [1.0.0]
 - Promoted 0.5.4 to stable release as no significant changes are expected at the moment.
 
