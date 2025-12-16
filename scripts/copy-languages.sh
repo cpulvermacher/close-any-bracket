@@ -21,7 +21,7 @@ do
         *prism-apacheconf.min.js) continue ;; # no useful tokens
         *prism-sqf.min.js) continue ;; # `clike` works just fine
     esac
-    cp "$f" "out/$(basename "${f%.min.*}").js"
+    cp --no-preserve=mode "$f" "out/$(basename "${f%.min.*}").js"
 done
 
 # check we have the expected number of language definitions
