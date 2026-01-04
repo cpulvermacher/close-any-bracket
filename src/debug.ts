@@ -1,6 +1,6 @@
 // Debug helper functions
 import type Prism from 'prismjs';
-import { Token, isSingleToken } from './token';
+import { isSingleToken, Token } from './token';
 
 export function formatToken(token: Token): string {
     if (typeof token === 'string') {
