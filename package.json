@@ -71,12 +71,13 @@
     "watch": "pnpm esbuild-base --sourcemap --watch",
     "build": "npx vsce package --no-dependencies",
     "pretest": "tsc -p ./",
-    "lint": "eslint src && tsc --noEmit && prettier src --check",
+    "format": "pnpm exec biome check --write src/",
+    "lint": "tsc --noEmit && pnpm exec biome check src/",
     "test": "vitest --run && node ./out/test/runTest.js",
     "checkall": "pnpm test && pnpm lint && pnpm build"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@biomejs/biome": "2.2.4",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/prismjs": "^1.26.5",
@@ -84,12 +85,9 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.7.1",
     "esbuild": "^0.27.2",
-    "eslint": "^9.39.2",
     "glob": "^13.0.0",
     "mocha": "^11.7.5",
-    "prettier": "^3.7.4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.51.0",
     "vitest": "^4.0.16"
   },
   "dependencies": {
