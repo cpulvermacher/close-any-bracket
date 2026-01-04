@@ -83,14 +83,14 @@
     "@types/vscode": "^1.95.0",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.7.1",
-    "esbuild": "^0.27.1",
+    "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
     "glob": "^13.0.0",
     "mocha": "^11.7.5",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.0",
-    "vitest": "^4.0.15"
+    "typescript-eslint": "^8.51.0",
+    "vitest": "^4.0.16"
   },
   "dependencies": {
     "prismjs": "^1.30.0"
