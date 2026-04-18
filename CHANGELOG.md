@@ -1,21 +1,31 @@
 # Change Log
 
+## [1.0.2] (pre-release)
+
+- Update dependencies
+
 ## [1.0.1] (pre-release)
+
 - Handle mixed tab and space indentation using editor tab size.
 
 ## [1.0.0]
+
 - Promoted 0.5.4 to stable release as no significant changes are expected at the moment.
 
 ## [0.5.4] (pre-release)
+
 - Automate release process
 
 ## [0.5.3] (pre-release)
+
 - Update dependencies
 
 ## [0.5.2]
+
 - Add support for Bruno files (.bru)
 
 ## [0.5.1]
+
 - Same contents as 0.5.0
 
 ## [0.5.0] (pre-release)
