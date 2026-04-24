@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.1.0]
+
+Same as 1.0.2.
+
+- Handle mixed tab and space indentation using editor tab size.
+
 ## [1.0.2] (pre-release)
 
 - Update dependencies
