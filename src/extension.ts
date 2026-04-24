@@ -61,7 +61,7 @@ function closeToIndent() {
     );
 
     if (missingBrackets) {
-        const insertString = missingBrackets + '\n';
+        const insertString = `${missingBrackets}\n`;
         editor.edit((editBuilder) => {
             editBuilder.insert(editor.selection.active, insertString);
         });
