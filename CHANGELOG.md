@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.0]
+
+- Add support for Terraform files (.tf)
+
 ## [1.1.0]
 
 Same as 1.0.2.

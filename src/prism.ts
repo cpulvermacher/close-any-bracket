@@ -79,6 +79,9 @@ export function getGrammar(
         case 'svelte':
             grammarId = 'html';
             break;
+        case 'terraform':
+            grammarId = 'hcl';
+            break;
         case 'typescriptreact':
             grammarId = 'tsx';
             break;

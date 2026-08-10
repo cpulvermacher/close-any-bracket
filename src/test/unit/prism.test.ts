@@ -28,6 +28,7 @@ describe('getGrammar', () => {
         expect(getGrammar('shellscript')).toBe(languages.shell);
         expect(getGrammar('slim')).toBe(languages.pug);
         expect(getGrammar('svelte')).toBe(languages.html);
+        expect(getGrammar('terraform')).toBe(languages.hcl);
         expect(getGrammar('typescript')).toBe(languages.typescript);
         expect(getGrammar('typescriptreact')).toBe(languages.tsx);
         expect(getGrammar('Vimscript')).toBe(languages.vim);
