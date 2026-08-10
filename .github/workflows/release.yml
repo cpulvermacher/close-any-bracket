@@ -18,7 +18,7 @@ jobs:
     - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4
     - uses: actions/setup-node@v6
       with:
-        node-version: '22.x'
+        node-version: '24.x'
         cache: 'pnpm'
     - run: pnpm i
     - run: pnpm pretest
