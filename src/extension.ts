@@ -26,13 +26,19 @@ function close() {
     const cursorPosition = editor.selection.active;
     const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-    const insertString = closeBracket(
-        editor.document.getText(),
-        cursorOffset,
-        editor.document.languageId,
-        getExtension(editor.document.fileName),
-        getParserOptions(editor)
-    );
+    let insertString: string | null;
+    try {
+        insertString = closeBracket(
+            editor.document.getText(),
+            cursorOffset,
+            editor.document.languageId,
+            getExtension(editor.document.fileName),
+            getParserOptions(editor)
+        );
+    } catch (error) {
+        showError(error);
+        return;
+    }
 
     if (insertString) {
         editor.edit((editBuilder) => {
@@ -50,15 +56,21 @@ function closeToIndent() {
     const cursorPosition = editor.selection.active;
     const cursorOffset = editor.document.offsetAt(cursorPosition);
 
-    const missingBrackets = closeToIndentAtLine(
-        editor.document.getText(),
-        cursorOffset,
-        editor.document.languageId,
-        getExtension(editor.document.fileName),
-        cursorPosition.line,
-        (line) => getLine(editor.document, line),
-        getParserOptions(editor)
-    );
+    let missingBrackets: string;
+    try {
+        missingBrackets = closeToIndentAtLine(
+            editor.document.getText(),
+            cursorOffset,
+            editor.document.languageId,
+            getExtension(editor.document.fileName),
+            cursorPosition.line,
+            (line) => getLine(editor.document, line),
+            getParserOptions(editor)
+        );
+    } catch (error) {
+        showError(error);
+        return;
+    }
 
     if (missingBrackets) {
         const insertString = `${missingBrackets}\n`;
@@ -66,6 +78,11 @@ function closeToIndent() {
             editBuilder.insert(editor.selection.active, insertString);
         });
     }
+}
+
+function showError(error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    void vscode.window.showWarningMessage(`Close Any Bracket: ${message}`);
 }
 
 function getParserOptions(editor: vscode.TextEditor) {
