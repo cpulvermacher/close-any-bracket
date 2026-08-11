@@ -39,7 +39,11 @@ suite('Extension ', () => {
         );
 
         const text = await waitForNewText;
-        assert.strictEqual(text, withAddedTextAtCursor(exampleJsFile, '})\n'));
+        // indented like `abc.def({`, which opened both brackets
+        assert.strictEqual(
+            text,
+            withAddedTextAtCursor(exampleJsFile, '    })\n')
+        );
     });
 
     async function openEditor(

@@ -262,9 +262,12 @@ describe('closeToIndentAtLine', () => {
                     { ignoreAlreadyClosed: !untilCursor, tabSize: 4 }
                 );
 
-                expect(result, `failure in last line of: ${code}`).toBe(
-                    expectedBrackets
-                );
+                // these examples only check *which* brackets are closed,
+                // indentation is checked separately below
+                expect(
+                    result.replace(/\s/g, ''),
+                    `failure in last line of: ${code}`
+                ).toBe(expectedBrackets);
             }
 
             offsetBeginningOfLine += lines[i].length + 1;
@@ -312,7 +315,7 @@ describe('closeToIndentAtLine', () => {
             getLine,
             options
         );
-        expect(missingBrackets).toBe('})');
+        expect(missingBrackets).toBe('    })');
     });
 
     [2, 4].forEach((tabSize) => {
@@ -338,8 +341,25 @@ ${spaceIndentLevel1}{
                 { ignoreAlreadyClosed: false, tabSize }
             );
 
-            expect(result).toBe('}}');
+            // each bracket is indented like the line it was opened in
+            expect(result).toBe(`\t}\n${spaceIndentLevel1}}`);
         });
+    });
+
+    it('indents each bracket like the line it was opened in', () => {
+        const code = `if (abc) {
+    abc.def({
+        foo(
+`;
+        expect(closeToIndent(code, code.length, 'javascript')).toBe(
+            '        )\n    })\n}'
+        );
+    });
+
+    it('keeps brackets opened in the same line together', () => {
+        const code = `foo({ [
+`;
+        expect(closeToIndent(code, code.length, 'javascript')).toBe(']})');
     });
 });
 

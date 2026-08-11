@@ -2,6 +2,7 @@
 
 ## [1.3.0] (pre-release)
 
+- Close all open brackets to current indent: Indent each bracket at the indent it was opened, brackets opened in different lines are closed on different lines as well.
 - For unknown language, fall back to C-like grammar rather than doing nothing.
 
 ## [1.2.0]

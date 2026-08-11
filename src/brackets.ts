@@ -54,14 +54,17 @@ export function closeBracket(
  * gets string with all brackets that should be closed at the given lineNo,
  * using the indentation at the line to determine depth.
  *
+ * Brackets that were opened in different lines are put into separate lines,
+ * each indented like the line the bracket was opened in.
+ *
  * E.g.
  * ```
  * if (abc) { // opened at level 0
  *     abc.def(); <- returns ``, nothing to close in this line (indent level 4)
  *     for (a of list) { // opened at level 4
  *         // ...
- *     // <- returns `}` (closing unclosed for-loop on same level)
- * // <- returns `}}` (closing both for and if, since opened at level >= 0)
+ *     // <- returns `    }` (closing unclosed for-loop on same level)
+ * // <- returns `    }\n}` (closing both for and if, since opened at level >= 0)
  * ```
  */
 export function closeToIndentAtLine(
@@ -104,7 +107,6 @@ export function closeToIndentAtLine(
         return targetBrackets;
     };
 
-    let bracketsToClose = '';
     const missing = getMissingBrackets(
         text,
         cursorOffset,
@@ -114,15 +116,37 @@ export function closeToIndentAtLine(
         filterBrackets
     );
     if (!missing) {
-        return bracketsToClose;
+        return '';
     }
 
     console.debug('Target indent:', targetIndent, 'missing brackets:', missing);
+
+    // close the innermost bracket first, putting all brackets that were opened
+    // in the same line into a line of their own, indented like that line
+    let bracketsToClose = '';
+    let previousLineNo: number | undefined;
     for (let i = missing.length - 1; i >= 0; i--) {
-        bracketsToClose += toClosingBracket(missing[i]);
+        const bracket = missing[i];
+        if (bracket.lineNo !== previousLineNo) {
+            if (previousLineNo !== undefined) {
+                bracketsToClose += '\n';
+            }
+            bracketsToClose += getIndentationAtLine(bracket.lineNo, getLine);
+            previousLineNo = bracket.lineNo;
+        }
+        bracketsToClose += toClosingBracket(bracket);
     }
 
     return bracketsToClose;
+}
+
+/** Returns the whitespace the given line starts with. */
+function getIndentationAtLine(
+    lineNo: number,
+    getLine: (line: number) => string
+): string {
+    const line = getLine(lineNo);
+    return line.slice(0, line.length - line.trimStart().length);
 }
 
 /**

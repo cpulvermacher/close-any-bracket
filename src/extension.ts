@@ -72,12 +72,32 @@ function closeToIndent() {
         return;
     }
 
-    if (missingBrackets) {
-        const insertString = `${missingBrackets}\n`;
-        editor.edit((editBuilder) => {
-            editBuilder.insert(editor.selection.active, insertString);
-        });
+    if (!missingBrackets) {
+        return;
     }
+
+    // the brackets bring their own indentation, so replace the indentation
+    // that is already in the line (e.g. added automatically by VSCode).
+    // If there is anything else before the cursor, keep the first bracket there.
+    const textBeforeCursor = getLine(
+        editor.document,
+        cursorPosition.line
+    ).slice(0, cursorPosition.character);
+    const replaceIndent = textBeforeCursor.trim() === '';
+
+    const insertString = replaceIndent
+        ? `${missingBrackets}\n`
+        : `${missingBrackets.trimStart()}\n`;
+    const replaceRange = new vscode.Range(
+        replaceIndent
+            ? new vscode.Position(cursorPosition.line, 0)
+            : cursorPosition,
+        cursorPosition
+    );
+
+    editor.edit((editBuilder) => {
+        editBuilder.replace(replaceRange, insertString);
+    });
 }
 
 function showError(error: unknown) {
