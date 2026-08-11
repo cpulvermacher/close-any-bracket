@@ -3,7 +3,7 @@
   "displayName": "Close Any Bracket",
   "description": "Close open braces, brackets, or parentheses in the right order, with a single keystroke.",
   "publisher": "cpulvermacher",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/cpulvermacher/close-any-bracket.git"
