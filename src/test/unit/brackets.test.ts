@@ -154,6 +154,7 @@ describe('closeBracket', () => {
     });
 
     it.skip('closes brackets before template string', () => {
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: literal input for the parser, not an interpolation
         expect(closeBracket('(`${[}`', 7, 'javascript', '', options)).toBe(')');
     });
 
