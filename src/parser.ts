@@ -17,9 +17,6 @@ export function getContext(
     fileExtension: string
 ): Context | null {
     const allTokens = tokenize(text, languageId, fileExtension);
-    if (!allTokens) {
-        return null;
-    }
 
     return getContextAtCursor(allTokens, cursorOffset);
 }

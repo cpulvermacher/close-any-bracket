@@ -4,9 +4,12 @@ import { describe, expect, it } from 'vitest';
 import { getGrammar } from '../../prism';
 
 describe('getGrammar', () => {
-    it('returns null for unknown language', () => {
-        expect(getGrammar('')).toBe(null);
-        expect(getGrammar('1234568')).toBe(null);
+    it('falls back to clike for unknown language', () => {
+        expect(getGrammar('')).toBe(languages.clike);
+        expect(getGrammar('1234568')).toBe(languages.clike);
+        expect(getGrammar('1234568', 'unknown-extension')).toBe(
+            languages.clike
+        );
     });
 
     it('maps from VSCode language to grammar', () => {

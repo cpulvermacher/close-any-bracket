@@ -29,6 +29,19 @@ describe('closeBracket', () => {
         expect(closeBracket('(', 0, 'javascript', '', options)).toBe(null);
     });
 
+    it('falls back to clike syntax for unknown languages', () => {
+        expect(closeBracket('fn f() { a[0', 12, 'my-lang', '', options)).toBe(
+            ']'
+        );
+        //strings and comments are still taken into account
+        expect(
+            closeBracket('f({\n// a ( comment', 17, 'my-lang', '', options)
+        ).toBe(null);
+        expect(
+            closeBracket('f({ "a ( string"', 12, 'my-lang', '', options)
+        ).toBe(null);
+    });
+
     it('ignores brackets if not relevant for language', () => {
         expect(closeBracket('{([', 2, 'latex', '', options)).toBe('}');
         expect(closeBracket('{([', 3, 'latex', '', options)).toBe(']');

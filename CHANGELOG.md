@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.3.0] (pre-release)
+
+- For unknown language, fall back to C-like grammar rather than doing nothing.
+
 ## [1.2.0]
 
 - Add support for Terraform files (.tf)

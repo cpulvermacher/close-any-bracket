@@ -9,27 +9,23 @@ export function tokenize(
     text: string,
     languageId: string,
     fileExtension: string
-): Prism.TokenStream | null {
-    const grammar = getGrammar(languageId, fileExtension);
-    if (!grammar) {
-        console.log(
-            `Couldn't find grammar for language ${languageId}, file extension ${fileExtension}`
-        );
-        return null;
-    }
-
-    return Prism.tokenize(text, grammar);
+): Prism.TokenStream {
+    return Prism.tokenize(text, getGrammar(languageId, fileExtension));
 }
 
 /**
  * Maps VSCode language identifiers (https://code.visualstudio.com/docs/languages/identifiers)
- * to Grammar (https://prismjs.com/#supported-languages) or null if not found.
+ * to Grammar (https://prismjs.com/#supported-languages).
  * Note that the list of identifiers for VSCode is not exhaustive and maybe outdated, it's best to test file types in question.
+ *
+ * If there is no grammar for the language, falls back to `clike`, which gets
+ * brackets, strings and comments right for most of the languages Prism doesn't
+ * know about.
  */
 export function getGrammar(
     languageId: string,
     fileExtension?: string
-): Prism.Grammar | null {
+): Prism.Grammar {
     let grammarId: string;
     switch (languageId) {
         case 'bat':
@@ -116,10 +112,22 @@ export function getGrammar(
         }
     }
 
-    if (!(grammarId in Prism.languages)) {
+    if (grammarId && !(grammarId in Prism.languages)) {
         console.log(`Trying to load grammar for ${grammarId}...`);
-        loadLanguages(grammarId);
+        try {
+            loadLanguages(grammarId);
+        } catch (error) {
+            console.log(`Failed to load grammar for ${grammarId}: ${error}`);
+        }
     }
 
-    return Prism.languages[grammarId] || null;
+    const grammar = Prism.languages[grammarId];
+    if (grammar) {
+        return grammar;
+    }
+
+    console.log(
+        `No grammar for language ${languageId}, file extension ${fileExtension}, falling back to clike`
+    );
+    return Prism.languages.clike;
 }
