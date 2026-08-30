@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.3.1]
+
+Same as 1.3.0.
+
 ## [1.3.0] (pre-release)
 
 - Close all open brackets to current indent: Indent each bracket at the indent it was opened, brackets opened in different lines are closed on different lines as well.
