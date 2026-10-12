@@ -202,9 +202,6 @@ importers:
       esbuild:
         specifier: ^0.28.1
         version: 0.28.1
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
       mocha:
         specifier: ^11.8.0
         version: 11.8.0
